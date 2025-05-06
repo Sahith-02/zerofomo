@@ -1,0 +1,178 @@
+/* StudentPage specific styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+.student-page-container {
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Simple styling for the journey heading */
+.student-journey-heading {
+  color: white;
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+}
+
+/* Options container */
+.student-journey-options-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: 30px;
+}
+
+.student-journey-option {
+  width: 300px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.student-journey-image-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.student-journey-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.student-journey-image:hover {
+  transform: scale(1.05);
+}
+
+.student-journey-title {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.student-journey-description {
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.student-journey-button {
+  background-color: #ff3b3b;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transform-style: preserve-3d;
+  animation: bounce 1.5s infinite ease-in-out;
+  transition: all 0.3s ease;
+}
+
+.student-journey-button .button-text {
+  position: relative;
+  z-index: 2;
+}
+
+.student-journey-button .button-icon {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.student-journey-button:hover {
+  animation: bounceHover 1s infinite ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes bounceHover {
+  0%, 100% {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.08);
+    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25), 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Responsive designs */
+@media (max-width: 1024px) {
+  .student-journey-options-container {
+    gap: 20px;
+  }
+  
+  .student-journey-option {
+    width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* The student-background will remain fixed, but we ensure content is scrollable */
+  .student-content {
+    padding-top: 80px; /* Add space for header */
+    padding-bottom: 60px;
+  }
+
+  .student-journey-heading {
+    font-size: 2rem;
+  }
+  
+  .student-journey-options-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .student-journey-option {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-journey-heading {
+    font-size: 1.75rem;
+    margin-top: 20px;
+  }
+  
+  .student-journey-image-container {
+    height: 180px;
+  }
+  
+  /* Force scrolling for very small screens */
+  html, body, .student-page-container {
+    overflow-y: auto !important;
+    height: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}

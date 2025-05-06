@@ -58,18 +58,10 @@ const SignupPage = () => {
   return (
     <div className="auth-page">
       <Header />
-      <div className="hero-background">
-          <img src="/assets/banner.png" alt="Student studying" className="hero-image_" />
-        </div>
+      
       <div className="auth-container">
+        {/* Background image is now handled in CSS via .auth-container */}
         <div className="auth-form-container">
-          {/* <div className="profile-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div> */}
-
           {error && <div className="auth-error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="auth-form">

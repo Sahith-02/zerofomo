@@ -11,7 +11,7 @@ const HomePage = () => {
       
       <div className="hero-section">
         <div className="hero-background">
-          <img src="/assets/banner.png" alt="Student studying" className="hero-image" />
+          <img src="/assets/banner.jpg" alt="Student studying" className="hero-image" />
         </div>
         <div className="hero-overlay">
           <div className="hero-content">
@@ -26,11 +26,11 @@ const HomePage = () => {
             <div className="cta-buttons">
               <Link to="/student" className="cta-button">
                 <span>👨‍🎓 I am a Student</span>
-                <MdOutlineDoubleArrow size={30}/>
+                {/* <MdOutlineDoubleArrow className="arrow-icon" size={30}/> */}
               </Link>
               <Link to="/parent" className="cta-button">
-                <span >👪 I am a Parent</span>
-                <MdOutlineDoubleArrow size={30} />
+                <span>👪 I am a Parent</span>
+                {/* <MdOutlineDoubleArrow className="arrow-icon" size={30} /> */}
               </Link>
             </div>
           </div>

@@ -11,13 +11,13 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background-image: url("https://example.com/background-image.jpg"); /* Replace with your actual image */
+  background-image: url("/assets/auth.jpg"); /* Update this path to match your image location */
   background-size: cover;
   background-position: center;
   position: relative;
 }
 
-.auth-container::before {
+/* .auth-container::before {
   content: '';
   position: absolute;
   top: 0;
@@ -26,7 +26,7 @@
   bottom: 0;
   background: linear-gradient(to right, rgba(100, 67, 35, 0.7), rgba(137, 104, 64, 0.7));
   z-index: 1;
-}
+} */
 
 .auth-form-container {
   width: 100%;
@@ -37,30 +37,6 @@
   flex-direction: column;
   align-items: center;
 }
-
-/* .profile-icon {
-  width: 100px;
-  height: 100px;
-  background-color: white;
-  border-radius: 50%;
-  margin-bottom: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-} */
-
-
-
-.hero-image_ {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(2.0);
-  filter: blur(8px);
-  -webkit-filter: blur(8px);
-  background-repeat: repeat-y;
-}
-
 
 .profile-icon svg {
   width: 60px;
@@ -97,7 +73,7 @@
   border-radius: 50px;
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
-  background-color: rgba(255, 255, 255, 0.8);
+  /* background-color: rgba(255, 255, 255, 0.8); */
   color: #333;
   transition: all 0.3s;
 }
@@ -109,7 +85,7 @@
 .form-group input:focus {
   outline: none;
   border-color: #fff;
-  background-color: rgba(255, 255, 255, 0.95);
+  /* background-color: rgba(255, 255, 255, 0.95); */
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 

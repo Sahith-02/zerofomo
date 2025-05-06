@@ -8,14 +8,13 @@
 }
 
 .site-header {
-  background-color: #fff;
-  padding: 4px 30px;
+  background-color: #000;
+  padding: 0px 30px;
   width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: relative;
   z-index: 100;
-  background-color: #000;
-    color: #fff;
+  color: #fff;
 }
 
 .header-content {
@@ -27,10 +26,10 @@
   margin: 0 auto;
 }
 
-.logo-section {
+.left-section {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
 .logo-link {
@@ -44,55 +43,68 @@
   border-radius: 50%;
 }
 
-.about-link {
-  font-weight: 600;
+.brand-title {
+  display: block;
+  text-decoration: none;
+}
+
+.brand-text {
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-link {
+  font-weight: 500;
   font-size: 16px;
   color: white;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-
-
-.brand-title {
-  display: block;
-  text-decoration: none;
-  
-}
-
-.brand-title h1 {
-  font-size: 30px;
-  font-weight: 700;
-  color: #000;
-  letter-spacing: 0.5px;
-  margin: 0;
-}
-
-.brand-text {
-  color: white;
-    font-size: xx-large;
+.nav-link:hover {
+  color: var(--color-mint);
 }
 
 .profile-section {
   position: relative;
-  
+  background-color: transparent !important; /* Force transparent background */
 }
 
 .profile-icon {
   cursor: pointer;
-  color: #000;
-  transition: color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
+  transition: transform 0.2s ease;
+  background-color: transparent !important; /* Force transparent */
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  
+  object-fit: cover;
+  background-color: transparent !important; /* Force transparent */
+  border: none;
+  display: block; /* Ensure proper image rendering */
 }
 
 
 .profile-icon:hover {
-  color: var(--color-teal);
+  transform: scale(1.05);
 }
 
 .dropdown-menu {
@@ -112,6 +124,7 @@
   border-bottom: 1px solid #eee;
   font-weight: 500;
   word-break: break-word;
+  color: #333;
 }
 
 .dropdown-item {
@@ -144,61 +157,82 @@
   background-color: #fff5f5;
 }
 
+.mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
 /* Responsive designs */
+@media (max-width: 992px) {
+  .nav-links {
+    gap: 15px;
+  }
+  
+  .right-section {
+    gap: 20px;
+  }
+}
+
 @media (max-width: 768px) {
-  .site-header {
-    padding: 10px 15px;
+  .mobile-menu-button {
+    display: block;
   }
-
-  .header-content {
-    flex-wrap: wrap;
-  }
-
-  .brand-title {
-    order: -1;
+  
+  .right-section {
+    position: absolute;
+    top: 70px;
+    left: 0;
     width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
+    background-color: #000;
+    flex-direction: column;
+    gap: 0;
+    padding: 20px 0;
+    transform: translateY(-150%);
+    transition: transform 0.3s ease;
+    z-index: 99;
   }
-
-  .brand-title h1 {
-    font-size: 24px;
+  
+  .right-section.mobile-menu-active {
+    transform: translateY(0);
   }
-
-  .logo-section {
-    flex: 1;
-    justify-content: flex-start;
+  
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
   }
-
+  
+  .nav-link {
+    padding: 15px 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
   .profile-section {
-    flex: 0;
+    padding: 15px 30px;
+    width: 100%;
+  }
+  
+  .dropdown-menu {
+    right: 30px;
   }
 }
 
 @media (max-width: 576px) {
   .site-header {
-    padding: 8px 10px;
+    padding: 10px 15px;
   }
-
+  
   .logo-image {
     width: 40px;
     height: 40px;
   }
-
-  .about-link {
-    font-size: 14px;
-  }
-
-  .logo-section {
-    gap: 10px;
-  }
-
-  .brand-title h1 {
+  
+  .brand-text {
     font-size: 22px;
-  }
-
-  .profile-icon svg {
-    width: 30px;
-    height: 30px;
   }
 }
