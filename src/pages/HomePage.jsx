@@ -5,7 +5,7 @@ import { MdOutlineDoubleArrow } from "react-icons/md";
 import Header from '../components/Header';
 import Student_Home from '../components/Student_Home';
 import Parent_Home from '../components/Parent_Home';
-import Students_Placed from '../components/Students_placed';
+import Students_Placed from '../components/Students_Placed';
 
 const HomePage = () => {
   // State to track which tab is active (default: 'student')
