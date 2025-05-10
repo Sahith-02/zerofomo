@@ -7,7 +7,6 @@ import ProfilePage from './pages/ProfilePage';
 import StudentPage from './pages/StudentPage';
 import { AuthProvider } from './context/AuthContext';
 import ParentPage from './pages/ParentPage';
-import Student_Home from './components/Student_Home';
 // Import other pages
 
 function App() {

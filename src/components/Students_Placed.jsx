@@ -1,6 +1,6 @@
-import '../styles/Students_placed.css';
+import '../styles/Students_Placed.css';
 
-export default function StudentsPlaced() {
+const Students_Placed = () => {
   // Data structure with just 4 regions and their front/back images
   const regions = [
     {
@@ -77,3 +77,4 @@ export default function StudentsPlaced() {
     </div>
   );
 }
+export default Students_Placed;
