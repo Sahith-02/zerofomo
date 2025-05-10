@@ -21,21 +21,20 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent all scrolling */
+  overflow-x: hidden;
 }
 
 .home-container {
-  height: 100vh; /* Fixed height instead of min-height */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden; /* Prevent any overflow */
 }
 
 .hero-section {
   position: relative;
   width: 100%;
-  height: 100vh; /* Fixed exact viewport height */
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -131,20 +130,15 @@ html, body {
   font-size: 14px;
   border-radius: 25px;
   transition: all 0.2s ease;
-  
-  /* 3D Effect */
   box-shadow: 0 5px 10px var(--color-shadow), 
               0 0 0 1px rgba(255, 255, 255, 0.1),
               inset 0 -4px 0 rgba(0, 0, 0, 0.2);
   position: relative;
   top: 0;
   border: 2px solid rgba(14, 14, 14, 0.1);
-  
-  /* Bouncing Animation */
   animation: bounce 2s infinite;
 }
 
-/* Staggered animation for second button */
 .cta-button:nth-child(2) {
   animation-delay: 0.5s;
 }
@@ -175,7 +169,6 @@ html, body {
   transform: translateX(5px);
 }
 
-/* Add a subtle pulse/glow effect to make the buttons even more attention-grabbing */
 @keyframes pulse {
   0% {
     box-shadow: 0 5px 10px var(--color-shadow),
@@ -201,6 +194,126 @@ html, body {
   animation: bounce 2s infinite, pulse 3s infinite;
 }
 
+/* Profile Section Styles */
+.profile-section {
+  width: 100%;
+  padding: 80px 20px;
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.profile-image-container {
+  flex: 0 0 25%;
+}
+
+.no_profile-image {
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.profile-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.profile-header {
+  margin-bottom: 10px;
+}
+
+.profile-title-box {
+  background-color:#c1e66f;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.profile-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #333;
+}
+
+.profile-description {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #444;
+  margin-bottom: 30px;
+  align-items: center;
+  font-weight:500;
+}
+
+.profile-description-bottom{
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.profile-difference {
+  margin-top: 10px;
+}
+
+.difference-title {
+  background-color:#c1e66f;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #333;
+}
+
+.profile-links {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+  justify-content: space-between;
+}
+
+.profile-link {
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  color: black;
+  position: relative;
+  padding-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.profile-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-teal);
+  transition: width 0.3s ease;
+}
+
+.profile-link:hover {
+  color: var(--color-mint);
+}
+
+.profile-link:hover::after {
+  width: 100%;
+}
+
 /* Responsive designs */
 @media (max-width: 1100px) {
   .hero-title {
@@ -218,6 +331,14 @@ html, body {
   .cta-buttons {
     margin-left: 40px;
   }
+
+  .profile-title {
+    font-size: 24px;
+  }
+
+  .difference-title {
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -234,6 +355,26 @@ html, body {
   .cta-buttons {
     justify-content: center;
     margin-left: 0;
+  }
+
+  .profile-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-image-container {
+    flex: 0 0 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .profile-title-box, .difference-title {
+    display: block;
+    text-align: center;
+  }
+
+  .profile-links {
+    justify-content: center;
   }
 }
 
@@ -256,21 +397,55 @@ html, body {
     gap: 15px;
     justify-content: center;
   }
+
+  .profile-description {
+    font-size: 15px;
+  }
+  .profile-description-bottom {
+    font-size: 15px;
+  }
 }
 
 @media (max-width: 576px) {
+  /* Dark overlay and white text for mobile */
+  .hero-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    z-index: 1;
+  }
+  
+  .hero-content {
+    color: white; /* White text for mobile */
+  }
+  
+  .highlight {
+    color: white; /* White highlight text */
+  }
+  
+  .profile-description-bottom {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  
   .hero-section {
-    height: 100vh; /* Fixed height on small screens */
+    height: 100vh;
   }
   
   .hero-title {
     font-size: 28px;
     margin-bottom: 15px;
+    color: white; /* Ensure title is white */
   }
   
   .hero-tagline {
     font-size: 14px;
     margin-bottom: 25px;
+    color: white; /* Ensure tagline is white */
   }
   
   .cta-buttons {
@@ -282,6 +457,24 @@ html, body {
     width: 100%;
     max-width: 200px;
   }
+
+  .profile-section {
+    padding: 50px 15px;
+  }
+
+  .profile-title {
+    font-size: 22px;
+  }
+
+  .profile-description {
+    font-size: 14px;
+  }
+
+  .profile-links {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
 }
 
 @media (max-width: 480px) {
@@ -292,5 +485,9 @@ html, body {
   .cta-button {
     padding: 10px 20px;
     font-size: 13px;
+  }
+
+  .profile-title-box, .difference-title {
+    padding: 8px 15px;
   }
 }
