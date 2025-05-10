@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import '../styles/Students_placed.css';
 
 export default function StudentsPlaced() {
