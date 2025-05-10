@@ -1,0 +1,136 @@
+.mission-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #fff;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  .mission-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .mission-tag {
+    background-color: #c1e66f;
+    color: #000;
+    font-weight: bold;
+    padding: 8px 16px;
+    width: fit-content;
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+  
+  .mission-title {
+    font-size: 38px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.2;
+  }
+  
+  .mission-subtitle {
+    font-size: 22px;
+    font-weight: normal;
+    margin: 0;
+  }
+  
+  .mission-text {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .mission-text p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .mission-button {
+    background-color: transparent;
+    border: 1px solid #333;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    width: fit-content;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+    color: #333;
+    text-align: center;
+  }
+  
+  .mission-button:hover {
+    background-color: #333;
+    color: white;
+  }
+  
+  .mission-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 350px; /* Default max-height that can be overridden */
+    max-width: 100%;   /* Default max-width that can be overridden */
+    overflow: hidden;
+  }
+  
+  .mission-image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 350px; /* Default max-height that can be overridden */
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .mission-container {
+      flex-direction: column-reverse;
+      padding: 30px 15px;
+      gap: 30px;
+    }
+    
+    .mission-title {
+      font-size: 32px;
+    }
+    
+    .mission-subtitle {
+      font-size: 20px;
+    }
+    
+    .mission-image, .mission-image img {
+      width: 100%;
+      /* Max-height is now controlled by inline styles */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mission-container {
+      padding: 20px 15px;
+      gap: 25px;
+    }
+    
+    .mission-title {
+      font-size: 28px;
+    }
+    
+    .mission-tag {
+      font-size: 14px;
+      padding: 6px 12px;
+    }
+    
+    .mission-button {
+      width: 100%;
+      text-align: center;
+    }
+    
+    /* Max-height for mobile is now controlled by inline styles */
+  }

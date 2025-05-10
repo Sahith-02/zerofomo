@@ -1,0 +1,284 @@
+.carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    margin: 2rem auto;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    min-height: 500px;
+  }
+  
+  .carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out; /* Updated to 0.4s */
+    padding: 2rem;
+  }
+  
+  .carousel-slide.active {
+    opacity: 1;
+    position: relative;
+  }
+  
+  .slide-content {
+    display: flex;
+    height: 100%;
+    gap: 2rem;
+  }
+  
+  .layout-left {
+    flex-direction: row-reverse;
+  }
+  
+  .layout-right {
+    flex-direction: row;
+  }
+  
+  /* Updated layout for slide 4 */
+  .layout-bottom {
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .text-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .slide-title {
+    background-color:#c1e66f;;
+    color: #000;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-radius: 4px;
+    align-self: flex-start;
+    position: relative;
+    z-index: 5;
+  }
+  
+  .slide-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+  }
+  
+  .slide-text p {
+    margin-bottom: 1rem;
+  }
+  
+  .image-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    position: relative;
+  }
+  
+  /* Specific styles for slide 4 */
+  .text-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .slide4-image {
+    width: 90%; /* Slightly wider */
+    max-height: 400px; /* Increased height */
+    min-height: 220px; /* Increased min-height */
+    margin: 1rem auto;
+  }
+  
+  .slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .scrabble-tiles {
+    padding: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    border-radius: 8px;
+    line-height: 1.6;
+    width: 100%;
+  }
+  
+  .tile-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .tile {
+    background-color: #e9c46a;
+    color: #000;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .carousel-control:hover {
+    background: rgba(195, 232, 141, 0.8);
+  }
+  
+  .prev {
+    left: 1rem;
+  }
+  
+  .next {
+    right: 1rem;
+  }
+  
+  .carousel-indicators {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+  }
+  
+  .indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+  }
+  
+  .indicator.active {
+    background-color: #c3e88d;
+    transform: scale(1.2);
+  }
+  
+  .indicator:hover {
+    background-color: rgba(195, 232, 141, 0.6);
+  }
+  
+  /* Media Queries for Responsive Design */
+  @media (max-width: 768px) {
+    .slide-content {
+      flex-direction: column !important;
+    }
+    
+    .image-container {
+      min-height: 200px;
+      margin-top: 1.5rem;
+    }
+    
+    .slide-title {
+      font-size: 1.2rem;
+    }
+    
+    .slide-text {
+      font-size: 0.9rem;
+    }
+    
+    .carousel-slide {
+      padding: 1.5rem;
+    }
+  
+    .carousel-container {
+      min-height: 400px;
+    }
+  
+    .scrabble-tiles {
+      font-size: 1.5rem;
+      padding: 1rem;
+    }
+  
+    .tile {
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.5rem;
+    }
+    
+    .slide4-image {
+      max-height: 220px;
+      min-height: 180px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .carousel-slide {
+      padding: 1rem;
+    }
+    
+    .image-container {
+      min-height: 150px;
+    }
+    
+    .slide-title {
+      font-size: 1rem;
+      padding: 0.4rem 0.8rem;
+      margin-bottom: 1rem;
+    }
+    
+    .scrabble-tiles {
+      font-size: 1.2rem;
+      padding: 0.5rem;
+    }
+  
+    .tile {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 1rem;
+    }
+  
+    .carousel-control {
+      width: 30px;
+      height: 30px;
+      font-size: 1rem;
+    }
+    
+    .slide4-image {
+      max-height: 180px;
+      min-height: 140px;
+    }
+  }

@@ -6,6 +6,49 @@ import Header from '../components/Header';
 import Student_Home from '../components/Student_Home';
 import Parent_Home from '../components/Parent_Home';
 import Students_Placed from '../components/Students_Placed';
+import MissionStatement from '../components/MissionStatement';
+import Carousel from './Carousel';
+
+const StudentMission = () => {
+  return (
+    <MissionStatement
+      title="To eliminate your FOMO and fuel your future."
+      paragraphs={[
+        "Whether you're a topper with a plan or still figuring it out, we are here for you",
+        "No noise, no pressure, just real guidance from choosing the right path to cracking admissions, so move forward with confidence.",
+        "Whatever your starting point, let's build what's next your way because we believe everyone is capable of becoming someone they are proud of."
+      ]}
+      imageUrl="../assets/student_mission.jpg"
+      imageAlt="Excited student with laptop and headphones"
+      buttonText="LEARN ABOUT OUR SERVICES"
+      buttonLink="/student"
+      imageHeight="400px" // Smaller height for this mission statement
+      imageWidth="450px"  // Custom width for this mission statement
+    />
+  );
+};
+
+// Example 2: Parent-focused mission (from second image)
+const ParentMission = () => {
+  return (
+    <MissionStatement
+      title="To make sure parents never feel left out of their child's journey."
+      paragraphs={[
+        "Sometimes, you may not have the knowledge or exposure to the path your child wants to take and that's okay.",
+        "Sometimes, you know their strengths and want to ensure they're on the right track.",
+        "And sometimes, you're simply worried because they don't seem to have any direction at all.",
+        "Whatever the situation, you're not alone.",
+        "We're here to help you stay informed, involved, and confident so you can support your child with clarity and heart."
+      ]}
+      imageUrl="../assets/parent_mission.jpg"
+      imageAlt="Parent and child smiling together"
+      buttonText="LEARN ABOUT OUR SERVICES"
+      buttonLink="/parent"
+      imageHeight="450px" // Taller height for this mission statement
+      imageWidth="700px"  // Wider width for this mission statement
+    />
+  );
+};
 
 const HomePage = () => {
   // State to track which tab is active (default: 'student')
@@ -107,7 +150,15 @@ const HomePage = () => {
       </div>
       
       <Students_Placed />
+      <StudentMission />
+      
+      {/* Other content */}
+      <div style={{ height: '50px' }}></div>
+      
+      <ParentMission />
+      <Carousel/>
     </div>
+
   );
 };
 

@@ -1,6 +1,7 @@
 .students-placed-container {
     width: 100%;
-    margin: 0 auto;
+    margin-top: 70px;
+   
     padding: 2rem 1rem;
     font-family: Arial, sans-serif;
   }

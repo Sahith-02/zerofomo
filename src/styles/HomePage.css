@@ -207,6 +207,7 @@ html, body {
 /* Profile Section Styles */
 .profile-section {
   width: 100%;
+  margin-top: 70px;
   padding: 80px 20px;
   background-color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
