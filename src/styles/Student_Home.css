@@ -45,7 +45,7 @@
   }
   
   .comparison_table {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     width: 100%;
     max-width: 1000px;
@@ -68,6 +68,7 @@
   
   .comparison_table th {
     font-weight: bold;
+    text-align: center; /* Center align the header text */
   }
   
   /* Column widths */
@@ -81,6 +82,9 @@
     width: 25%;
   }
   
+  .feature{
+    font-weight: 700;
+  }
   /* Mobile-specific adjustments */
   @media screen and (max-width: 768px) {
     .student_home_relative_container {

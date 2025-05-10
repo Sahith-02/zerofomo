@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/HomePage.css';
 import { Link } from 'react-router-dom';
 import { MdOutlineDoubleArrow } from "react-icons/md";
 import Header from '../components/Header';
 import Student_Home from '../components/Student_Home';
 import Parent_Home from '../components/Parent_Home';
-import Students_Placed from '../components/Students_Placed';
-
+import Students_Placed from '../components/Students_placed';
 
 const HomePage = () => {
+  // State to track which tab is active (default: 'student')
+  const [activeTab, setActiveTab] = useState('student');
+
+  // Handler to switch tabs
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="home-container">
       <Header />
       
       <div className="hero-section">
         <div className="hero-background">
-          <img src="/assets/banner.jpg" alt="Student studying" className="hero-image" />
+          {/* Desktop banner image */}
+          <img src="/assets/banner.jpg" alt="Student studying" className="hero-image desktop-banner" />
+          {/* Mobile banner image */}
+          <img src="/assets/banner_mobile_view.jpg" alt="Student studying" className="hero-image mobile-banner" />
         </div>
         <div className="hero-overlay">
           <div className="hero-content">
@@ -30,11 +40,9 @@ const HomePage = () => {
             <div className="cta-buttons">
               <Link to="/student" className="cta-button">
                 <span>👨‍🎓 I am a Student</span>
-                {/* <MdOutlineDoubleArrow className="arrow-icon" size={30}/> */}
               </Link>
               <Link to="/parent" className="cta-button">
                 <span>👪 I am a Parent</span>
-                {/* <MdOutlineDoubleArrow className="arrow-icon" size={30} /> */}
               </Link>
             </div>
           </div>
@@ -44,38 +52,61 @@ const HomePage = () => {
       {/* No Perfect Profile Section */}
       <div className="profile-section">
         <div className="profile-container">
-          <div className="profile-image-container">
-            <img src="/assets/no_profile.jpg" alt="Students with different profiles" className="no_profile-image" height="100px" />
-          </div>
-          <div className="profile-content">
-            <div className="profile-header">
-              <div className="profile-title-box">
-                <h2 className="profile-title">🎓 No Perfect Profile? No Problem.</h2>
-              </div>
+          <div className="profile-header">
+            <div className="profile-title-box">
+            <h2 className="profile-title">🎓 No Perfect Profile?<br className="mobile-only" /> No Problem.</h2>
             </div>
-            <p className="profile-description">
-              High or low GPA. Cracked GMAT, GRE, or CAT or still figuring it out.
-              Financially ready or looking for support. All-rounder or still finding
-              your spark. We've helped hundreds create their success stories.
-              <br />
-              <span className="profile-description-bottom">Now it's your turn to start yours.</span>
+          </div>
+          
+          <div className="profile-content-wrapper">
+            <div className="profile-image-container">
+              <img src="/assets/no_profile.jpg" alt="Students with different profiles" className="no_profile-image" />
+            </div>
+            <div className="profile-content">
+              <p className="profile-description">
+                High or low GPA. Cracked GMAT, GRE, or CAT or still figuring it out.
+                Financially ready or looking for support. All-rounder or still finding
+                your spark. We've helped hundreds create their success stories.
+                <br />
+                <span className="profile-description-bottom">Now it's your turn to start yours.</span>
+              </p>
+            </div>
+          </div>
+          
+          <div className="profile-difference">
+            <div className="difference-title-box">
+              <h2 className="difference-title">The ZeroFOMO Difference</h2>
+            </div>
             
-            </p>
-            
-            <div className="profile-difference">
-              <h3 className="difference-title">The ZeroFOMO Difference</h3>
-              
-              <div className="profile-links">
-                <Link to="/student" className="profile-link">Student</Link>
-                <Link to="/parent" className="profile-link">Parent</Link>
-              </div>
+            <div className="profile-links">
+              <button 
+                className={`profile-link ${activeTab === 'student' ? 'active' : ''}`}
+                onClick={() => handleTabChange('student')}
+              >
+                Student
+              </button>
+              <button 
+                className={`profile-link ${activeTab === 'parent' ? 'active' : ''}`}
+                onClick={() => handleTabChange('parent')}
+              >
+                Parent
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <Student_Home/>
-      <Parent_Home/>
-      <Students_Placed/>
+      
+      {/* Content section with transition effects */}
+      <div className="tab-content-container">
+        <div className={`tab-content ${activeTab === 'student' ? 'active' : ''}`}>
+          {activeTab === 'student' && <Student_Home />}
+        </div>
+        <div className={`tab-content ${activeTab === 'parent' ? 'active' : ''}`}>
+          {activeTab === 'parent' && <Parent_Home />}
+        </div>
+      </div>
+      
+      <Students_Placed />
     </div>
   );
 };

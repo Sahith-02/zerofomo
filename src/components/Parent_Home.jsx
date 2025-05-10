@@ -35,32 +35,32 @@ const Parent_Home = () => {
             </thead>
             <tbody>
               <tr>
-                <td>Parent Involvement</td>
+                <td className='feature'>Parent Involvement</td>
                 <td className="positive">✅ Empowers parents in every step</td>
                 <td className="negative">❌ Often leaves parents confused or excluded</td>
               </tr>
               <tr>
-                <td>Parent Empowerment & Validation</td>
+                <td className='feature'>Parent Empowerment & Validation</td>
                 <td className="positive">✅ Helps parents confident to earn validation and trust from their child</td>
                 <td className="negative">❌ Lacks support for parents to feel secure or respected in the process</td>
               </tr>
               <tr>
-                <td>Emotional Support</td>
+                <td className='feature'>Emotional Support</td>
                 <td className="positive">✅ Offers real empathy & reassurance</td>
                 <td className="negative">❌ Robotic or dismissive</td>
               </tr>
               <tr>
-                <td>Practical Insights</td>
+                <td className='feature'>Practical Insights</td>
                 <td className="positive">✅ Real parent stories, not just theory</td>
                 <td className="negative">❌ No personalized or real-life examples</td>
               </tr>
               <tr>
-                <td>Future-Focused Guidance</td>
+                <td className='feature'>Future-Focused Guidance</td>
                 <td className="positive">✅ Career thinking, values, clarity</td>
                 <td className="negative">❌ Focuses only on college forms</td>
               </tr>
               <tr>
-                <td>Worried About Child's Direction?</td>
+                <td className='feature'>Worried About Child's Direction?</td>
                 <td className="positive">✅ Safe space for open discussions to express concerns and explore direction with guidance</td>
                 <td className="negative">❌ No space to reflect or process; jumps straight to courses or scores</td>
               </tr>
