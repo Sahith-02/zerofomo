@@ -92,86 +92,102 @@ const About = () => {
   }, []);
 
   return (
-
     <div>
-    <Header />
-    <div className="about-container">
-       
-      {sections.map((section, index) => (
-        <div 
-          key={section.id}
-          className={`about-section ${section.id === 4 ? 'section-special' : ''}`}
-          ref={el => sectionsRef.current[index] = el}
-        >
-          {section.id === 4 ? (
-            <div className="section-content special-layout">
-              <h2 className="section-title">{section.title}</h2>
-              
-              {section.image && (
-                <div className="image-container slide4-image">
-                  <img 
-                    src={section.imageUrl} 
-                    alt={section.altText} 
-                    className="section-image slide4-image"
-                  />
-                </div>
-              )}
-              
-              <div className="section-text" style={{ textAlign: "center" }}>
-                {section.content.split('\n').map((paragraph, i) => (
-                  <p key={i}>{paragraph.trim()}</p>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className={`section-content layout-${section.imagePosition}`}>
-              {/* Special case for section 2 to force image on left */}
-              {section.id === 2 ? (
-                <>
-                  <div className="image-container">
+      <Header />
+      <div className="about-container">
+        {sections.map((section, index) => (
+          <div 
+            key={section.id}
+            className={`about-section ${section.id === 4 ? 'section-special' : ''}`}
+            ref={el => sectionsRef.current[index] = el}
+          >
+            {section.id === 4 ? (
+              <div className="section-content special-layout">
+                <h2 className="section-title">{section.title}</h2>
+                
+                {section.image && (
+                  <div className="image-container slide4-image">
                     <img 
                       src={section.imageUrl} 
                       alt={section.altText} 
-                      className="section-image"
+                      className="section-image slide4-image"
                     />
                   </div>
-                  
-                  <div className="text-content">
-                    <h2 className="section-title">{section.title}</h2>
-                    <div className="section-text">
-                      {section.content.split('\n').map((paragraph, i) => (
-                        <p key={i}>{paragraph.trim()}</p>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {section.image && section.imagePosition === 'left' && (
-                    <div className="image-container">
-                      {section.imageContent && (
-                        <div className="scrabble-tiles">
-                          {section.imageContent}
+                )}
+                
+                <div className="section-text" style={{ textAlign: "center" }}>
+                  {section.content.split('\n').map((paragraph, i) => (
+                    <p key={i}>{paragraph.trim()}</p>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className={`section-content layout-${section.imagePosition}`}>
+                {/* Desktop view maintains original layout */}
+                <div className="desktop-view">
+                  {section.id === 2 ? (
+                    <>
+                      <div className="image-container">
+                        <img 
+                          src={section.imageUrl} 
+                          alt={section.altText} 
+                          className="section-image"
+                        />
+                      </div>
+                      
+                      <div className="text-content">
+                        <h2 className="section-title">{section.title}</h2>
+                        <div className="section-text">
+                          {section.content.split('\n').map((paragraph, i) => (
+                            <p key={i}>{paragraph.trim()}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {section.image && section.imagePosition === 'left' && (
+                        <div className="image-container">
+                          {section.imageContent && (
+                            <div className="scrabble-tiles">
+                              {section.imageContent}
+                            </div>
+                          )}
+                          <img 
+                            src={section.imageUrl} 
+                            alt={section.altText} 
+                            className="section-image"
+                          />
                         </div>
                       )}
-                      <img 
-                        src={section.imageUrl} 
-                        alt={section.altText} 
-                        className="section-image"
-                      />
-                    </div>
+                      
+                      <div className="text-content">
+                        <h2 className="section-title">{section.title}</h2>
+                        <div className="section-text">
+                          {section.content.split('\n').map((paragraph, i) => (
+                            <p key={i}>{paragraph.trim()}</p>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {section.image && section.imagePosition === 'right' && (
+                        <div className="image-container">
+                          <img 
+                            src={section.imageUrl} 
+                            alt={section.altText} 
+                            className="section-image"
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
+                </div>
+
+                {/* Mobile view with title, image, content structure */}
+                <div className="mobile-view">
+                  <h2 className="section-title">{section.title}</h2>
                   
-                  <div className="text-content">
-                    <h2 className="section-title">{section.title}</h2>
-                    <div className="section-text">
-                      {section.content.split('\n').map((paragraph, i) => (
-                        <p key={i}>{paragraph.trim()}</p>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {section.image && section.imagePosition === 'right' && (
+                  {section.image && (
                     <div className="image-container">
                       <img 
                         src={section.imageUrl} 
@@ -180,15 +196,20 @@ const About = () => {
                       />
                     </div>
                   )}
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+                  
+                  <div className="section-text">
+                    {section.content.split('\n').map((paragraph, i) => (
+                      <p key={i}>{paragraph.trim()}</p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default About;   
+export default About;

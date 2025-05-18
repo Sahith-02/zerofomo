@@ -21,22 +21,48 @@ const MissionStatement = ({
   
   return (
     <div className="mission-container">
-      <div className="mission-content">
-        <div className="mission-tag">OUR MISSION</div>
-        <h1 className="mission-title">{title}</h1>
-        {subtitle && <h2 className="mission-subtitle">{subtitle}</h2>}
-        
-        <div className="mission-text">
-          {paragraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
+      {/* Desktop View - Keeps existing layout */}
+      <div className="desktop-view">
+        <div className="mission-content">
+          <div className="mission-tag">OUR MISSION</div>
+          <h1 className="mission-title">{title}</h1>
+          {subtitle && <h2 className="mission-subtitle">{subtitle}</h2>}
+          
+          <div className="mission-text">
+            {paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+          
+          <Link to={buttonLink || '#'} className="mission-button">{buttonText || 'LEARN ABOUT OUR SERVICES'}</Link>
         </div>
         
-        <Link to={buttonLink || '#'} className="mission-button">{buttonText || 'LEARN ABOUT OUR SERVICES'}</Link>
+        <div className="mission-image" style={imageStyle}>
+          <img src={imageUrl} alt={imageAlt} style={imageStyle} />
+        </div>
       </div>
-      
-      <div className="mission-image" style={imageStyle}>
-        <img src={imageUrl} alt={imageAlt} style={imageStyle} />
+
+      {/* Mobile View - Title, Image, Content */}
+      <div className="mobile-view">
+        <div className="mobile-header">
+          <div className="mission-tag">OUR MISSION</div>
+          <h1 className="mission-title">{title}</h1>
+          {subtitle && <h2 className="mission-subtitle">{subtitle}</h2>}
+        </div>
+        
+        <div className="mission-image" style={imageStyle}>
+          <img src={imageUrl} alt={imageAlt} style={imageStyle} />
+        </div>
+        
+        <div className="mobile-content">
+          <div className="mission-text">
+            {paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
+          
+          <Link to={buttonLink || '#'} className="mission-button">{buttonText || 'LEARN ABOUT OUR SERVICES'}</Link>
+        </div>
       </div>
     </div>
   );

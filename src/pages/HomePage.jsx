@@ -67,7 +67,7 @@ const HomePage = () => {
       <div className="hero-section">
         <div className="hero-background">
           {/* Desktop banner image */}
-          <img src="/assets/banner.jpg" alt="Student studying" className="hero-image desktop-banner" />
+          <img src="/assets/banner.jpg"  loading='lazy' alt="Student studying" className="hero-image desktop-banner" />
           {/* Mobile banner image */}
           <img src="/assets/banner_mobile_view.jpg" alt="Student studying" className="hero-image mobile-banner" />
         </div>

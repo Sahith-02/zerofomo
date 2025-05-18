@@ -7,7 +7,9 @@ const Header = () => {
   const { currentUser, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showServicesDropdown, setShowServicesDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const servicesDropdownRef = useRef(null);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,11 +21,14 @@ const Header = () => {
     }
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
+      }
+      if (servicesDropdownRef.current && !servicesDropdownRef.current.contains(event.target)) {
+        setShowServicesDropdown(false);
       }
     }
     
@@ -31,7 +36,7 @@ const Header = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [dropdownRef, servicesDropdownRef]);
 
   return (
     <header className="zf-site-header">
@@ -55,7 +60,28 @@ const Header = () => {
         <div className={`zf-right-section ${showMobileMenu ? 'zf-mobile-menu-active' : ''}`}>
           <nav className="zf-nav-links">
             <Link to="/about" className="zf-nav-link">About Us</Link>
-            <Link to="/services" className="zf-nav-link">Services</Link>
+            
+            {/* Services with dropdown */}
+            <div className="zf-services-dropdown-container" ref={servicesDropdownRef}>
+              <div 
+                className="zf-nav-link zf-services-link"
+                onClick={() => setShowServicesDropdown(!showServicesDropdown)}
+              >
+                Services <span className="zf-dropdown-arrow">▼</span>
+              </div>
+              
+              {showServicesDropdown && (
+                <div className="zf-services-dropdown">
+                  <Link to="/student" className="zf-services-dropdown-item" onClick={() => setShowServicesDropdown(false)}>
+                    Student
+                  </Link>
+                  <Link to="/parent" className="zf-services-dropdown-item" onClick={() => setShowServicesDropdown(false)}>
+                    Parent
+                  </Link>
+                </div>
+              )}
+            </div>
+            
             <Link to="/webinars" className="zf-nav-link">Webinars</Link>
             <Link to="/contact" className="zf-nav-link">Contact Us</Link>
           </nav>
