@@ -47,9 +47,12 @@ const LoginPage = () => {
       <Header />
       
       <div className="auth-container">
-        {/* Background image is now handled in CSS via .auth-container */}
         <div className="auth-form-container">
           {error && <div className="auth-error">{error}</div>}
+          
+          <div className="logo-container">
+            <img src="/assets/Login_User.jpg" alt="Logo" className="auth-logo" />
+          </div>
           
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
