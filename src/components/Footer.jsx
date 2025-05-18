@@ -7,9 +7,9 @@ const Footer = () => {
       <div className="footer-container">
         {/* Logo Section */}
         <div className="footer-logo-section">
-          <img 
-            src="/assets/logo.jpg" 
-            alt="Zero Fomo Logo" 
+          <img
+            src="/assets/logo.jpg"
+            alt="Zero Fomo Logo"
             className="footer-logo"
           />
           <p className="footer-logo-text">ZERO FOMO</p>
@@ -20,13 +20,19 @@ const Footer = () => {
           <h2 className="footer-heading">Menu</h2>
           <ul className="footer-menu-list">
             <li className="footer-menu-item">
-              <a href="/student" className="footer-link">Student</a>
+              <Link to="/student" className="footer-link">
+                <span>Student</span>
+              </Link>
             </li>
             <li className="footer-menu-item">
-              <a href="/parent" className="footer-link">Parent</a>
+              <Link to="/parent" className="footer-link">
+                <span>Parent</span>
+              </Link>
             </li>
             <li className="footer-menu-item">
-              <a href="#" className="footer-link">Webinars</a>
+              <a href="#" className="footer-link">
+                Webinars
+              </a>
             </li>
           </ul>
         </div>
@@ -36,7 +42,9 @@ const Footer = () => {
           <h2 className="footer-heading">Contact Us</h2>
           <div className="footer-contact-item">
             <div className="footer-icon email-icon"></div>
-            <a href="mailto:info@zerofomo.com" className="footer-link">Email</a>
+            <a href="mailto:info@zerofomo.com" className="footer-link">
+              Email
+            </a>
           </div>
         </div>
 
@@ -45,11 +53,15 @@ const Footer = () => {
           <h2 className="footer-heading">Follow Us</h2>
           <div className="footer-social-item">
             <div className="footer-icon linkedin-icon"></div>
-            <a href="#" className="footer-link">LinkedIn</a>
+            <a href="#" className="footer-link">
+              LinkedIn
+            </a>
           </div>
           <div className="footer-social-item">
             <div className="footer-icon instagram-icon"></div>
-            <a href="#" className="footer-link">Instagram</a>
+            <a href="#" className="footer-link">
+              Instagram
+            </a>
           </div>
         </div>
       </div>
