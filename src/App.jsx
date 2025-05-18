@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage';
 import StudentPage from './pages/StudentPage';
 import { AuthProvider } from './context/AuthContext';
 import ParentPage from './pages/ParentPage';
+import About from './pages/About';
 // Import other pages
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/student" element={<StudentPage />} />
           <Route path="/parent" element={<ParentPage />} />
+          <Route path="/about" element={<About/>}/>
           {/* Add other routes */}
         </Routes>
       </Router>

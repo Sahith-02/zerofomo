@@ -7,7 +7,8 @@ import Student_Home from '../components/Student_Home';
 import Parent_Home from '../components/Parent_Home';
 import Students_Placed from '../components/Students_Placed';
 import MissionStatement from '../components/MissionStatement';
-import Carousel from './Carousel';
+import Roadmap from '../components/Roadmap';
+import Footer from '../components/Footer';
 
 const StudentMission = () => {
   return (
@@ -156,7 +157,8 @@ const HomePage = () => {
       <div style={{ height: '50px' }}></div>
       
       <ParentMission />
-      <Carousel/>
+      <Roadmap/>
+      <Footer/>
     </div>
 
   );
