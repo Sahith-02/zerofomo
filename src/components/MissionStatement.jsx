@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/MissionStatement.css';
 
 const MissionStatement = ({ 
@@ -31,7 +32,7 @@ const MissionStatement = ({
           ))}
         </div>
         
-        <a href={buttonLink || '#'} className="mission-button">{buttonText || 'LEARN ABOUT OUR SERVICES'}</a>
+        <Link to={buttonLink || '#'} className="mission-button">{buttonText || 'LEARN ABOUT OUR SERVICES'}</Link>
       </div>
       
       <div className="mission-image" style={imageStyle}>
