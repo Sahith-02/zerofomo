@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import '../styles/About.css';
 import Header from '../components/Header';
+import PolicyPopup from '../components/PolicyPopup';
 
 const About = () => {
   const sectionsRef = useRef([]);
@@ -208,6 +209,7 @@ const About = () => {
           </div>
         ))}
       </div>
+      <PolicyPopup />
     </div>
   );
 };

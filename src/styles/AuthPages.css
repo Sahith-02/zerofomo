@@ -17,16 +17,7 @@
   position: relative;
 }
 
-/* .auth-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to right, rgba(100, 67, 35, 0.7), rgba(137, 104, 64, 0.7));
-  z-index: 1;
-} */
+
 
 .auth-form-container {
   width: 100%;
@@ -49,7 +40,7 @@
 .auth-logo {
   width: 120px;
   height: auto;
-  max-height: 120px;
+  max-height: 12  0px;
   object-fit: contain;
   border-radius: 50%;
 }

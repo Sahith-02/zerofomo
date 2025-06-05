@@ -1,0 +1,247 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  
+  /* Modal Container */
+  .modal-container {
+    background: white;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Close Button */
+  .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: 300;
+    color: #666;
+    cursor: pointer;
+    z-index: 10;
+    padding: 5px;
+    line-height: 1;
+  }
+  
+  .modal-close:hover {
+    color: #333;
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    display: flex;
+    min-height: 500px;
+  }
+  
+  /* Left Section */
+  .modal-left {
+    flex: 1;
+    padding: 40px 35px;
+    background: #f8f9fa;
+  }
+  
+  /* Step Sections */
+  .step-section {
+    margin-bottom: 40px;
+  }
+  
+  .step-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .step-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+  }
+  
+  .step-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+  
+  /* Services List */
+  .services-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+  }
+  
+  .service-item {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+    padding-left: 0;
+  }
+  
+  /* Buttons */
+  .discovery-btn,
+  .package-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .discovery-btn:hover,
+  .package-btn:hover {
+    background: #ff3742;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  }
+  
+  /* Right Section */
+  .modal-right {
+    flex: 0.6;
+    background: #2c2c2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 30px;
+  }
+  
+  .right-content {
+    text-align: left;
+    color: white;
+  }
+  
+  .right-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  
+  .right-subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 15px;
+  }
+  
+  .right-description {
+    font-size: 14px;
+    color: #cccccc;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+  
+  .more-info-btn {
+    background: white;
+    color: #333;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .more-info-btn:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .modal-container {
+      margin: 10px;
+      max-height: 95vh;
+    }
+    
+    .modal-content {
+      flex-direction: column;
+    }
+    
+    .modal-left {
+      padding: 30px 25px;
+    }
+    
+    .modal-right {
+      padding: 30px 25px;
+      flex: none;
+    }
+    
+    .step-title {
+      font-size: 16px;
+    }
+    
+    .step-description {
+      font-size: 13px;
+    }
+    
+    .service-item {
+      font-size: 13px;
+    }
+    
+    .right-title {
+      font-size: 18px;
+    }
+    
+    .right-subtitle {
+      font-size: 15px;
+    }
+    
+    .right-description {
+      font-size: 13px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .modal-overlay {
+      padding: 10px;
+    }
+    
+    .modal-left {
+      padding: 25px 20px;
+    }
+    
+    .modal-right {
+      padding: 25px 20px;
+    }
+    
+    .modal-close {
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+    }
+    
+    .discovery-btn,
+    .package-btn,
+    .more-info-btn {
+      width: 100%;
+      padding: 14px 20px;
+    }
+  }

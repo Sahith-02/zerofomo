@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/Categories.css';
 import Header from '../components/Header';
 
+
 const ParentPage = () => {
   const journeyOptions = [
     {
@@ -67,6 +68,7 @@ const ParentPage = () => {
           ))}
         </div>
       </div>
+      
     </div>
   );
 };

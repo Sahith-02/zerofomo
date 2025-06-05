@@ -7,6 +7,13 @@
   font-family: 'Poppins', sans-serif;
   overflow-y: auto;
   overflow-x: hidden;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Add dim effect when modal is open */
+.student-page-container.modal-open {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* Simple styling for the journey heading */

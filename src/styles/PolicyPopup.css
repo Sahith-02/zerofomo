@@ -1,0 +1,63 @@
+.policy-popup {
+  font-family: Arial, sans-serif;
+  padding: 15px 0;
+  background-color: black;
+  border-top: 1px solid black;
+  width: 100%;
+}
+
+.policy-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  flex-wrap: wrap;
+}
+
+.copyright {
+  color: white;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.policy-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.policy-link {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+  margin: 5px 0;
+}
+
+.policy-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .policy-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .policy-links {
+    justify-content: center;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .policy-links {
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
+}
