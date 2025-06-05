@@ -1,0 +1,214 @@
+/* Testimonials Container */
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: white;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Header Section */
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: black;
+}
+
+.testimonials-header h2 {
+ color: black;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  background: linear-gradient(45deg,  #000000 0%, #1f1f1f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.testimonials-header p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  font-weight: 400;
+  color: black;
+}
+
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+/* Carousel Track */
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Testimonial Card */
+.testimonial-card {
+  min-width: 100%;
+  background: white;
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  min-height: 280px;
+}
+
+.testimonial-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,  #ff4444 0%, #cc3333);
+}
+
+/* Quote Icon */
+.quote-icon {
+  font-size: 4rem;
+  color: #ff4444;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+/* Testimonial Text */
+.testimonial-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #2d3748;
+  margin-bottom: 30px;
+  max-width: 800px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Testimonial Footer */
+.testimonial-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* College Badge */
+.college-badge {
+  background: linear-gradient(135deg, #ff4444 0%, #cc3333);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Remove carousel dots styles */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .testimonials-container {
+    padding: 30px 15px;
+  }
+
+  .testimonials-header h2 {
+    font-size: 2rem;
+  }
+
+  .testimonials-header p {
+    font-size: 1rem;
+  }
+
+  .testimonial-card {
+    padding: 25px 20px;
+    min-height: 250px;
+  }
+
+  .quote-icon {
+    font-size: 3rem;
+  }
+
+  .testimonial-text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .college-badge {
+    font-size: 0.8rem;
+    padding: 6px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials-container {
+    padding: 25px 10px;
+  }
+
+  .testimonials-header {
+    margin-bottom: 20px;
+  }
+
+  .testimonials-header h2 {
+    font-size: 1.7rem;
+  }
+
+  .testimonial-card {
+    padding: 20px 15px;
+    min-height: 220px;
+  }
+
+  .testimonial-text {
+    font-size: 0.95rem;
+  }
+
+  .quote-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+}
+
+/* Animation for smooth entry */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.testimonial-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Hover effects */
+.testimonial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus styles for accessibility - removed dot focus styles */
+
+/* Loading state */
+.carousel-container.loading .testimonial-card {
+  opacity: 0.7;
+}
+
+/* Pause animation on hover */
+.testimonials-container:hover .carousel-track {
+  animation-play-state: paused;
+}

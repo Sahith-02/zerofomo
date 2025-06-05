@@ -10,6 +10,7 @@ import MissionStatement from "../components/MissionStatement";
 import Roadmap from "../components/Roadmap";
 import Footer from "../components/Footer";
 import PolicyPopup from "../components/PolicyPopup";
+import Testimonials from "../components/Testimonials";
 
 const StudentMission = () => {
   return (
@@ -186,6 +187,7 @@ const HomePage = () => {
 
       <ParentMission />
       <Roadmap />
+      <Testimonials/>
       <Footer />
       <PolicyPopup />
     </div>
