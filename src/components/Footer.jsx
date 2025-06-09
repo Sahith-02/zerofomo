@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/Footer.css"; // Path to your CSS file
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -9,7 +9,7 @@ const Footer = () => {
         {/* Logo Section */}
         <div className="footer-logo-section">
           <img
-            src="/assets/logo.jpg"
+            src="/assets/logo.png"
             alt="Zero Fomo Logo"
             className="footer-logo"
           />
@@ -43,7 +43,7 @@ const Footer = () => {
           <h2 className="footer-heading">Contact Us</h2>
           <div className="footer-contact-item">
             <div className="footer-icon email-icon"></div>
-            <a href="mailto:info@zerofomo.com" className="footer-link">
+            <a href="mailto:contact@zerofomo.com" className="footer-link">
               Email
             </a>
           </div>
@@ -54,13 +54,19 @@ const Footer = () => {
           <h2 className="footer-heading">Follow Us</h2>
           <div className="footer-social-item">
             <div className="footer-icon linkedin-icon"></div>
-            <a href="#" className="footer-link">
+            <a
+              href="https://www.linkedin.com/company/zerofomo/"
+              className="footer-link"
+            >
               LinkedIn
             </a>
           </div>
           <div className="footer-social-item">
             <div className="footer-icon instagram-icon"></div>
-            <a href="#" className="footer-link">
+            <a
+              href="https://www.instagram.com/zerofomo"
+              className="footer-link"
+            >
               Instagram
             </a>
           </div>

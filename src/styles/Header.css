@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 :root {
-  --color-beige: #F1BA88;
-  --color-light-green: #E9F5BE;
-  --color-mint: #81E7AF;
-  --color-teal: #03A791;
+  --color-beige: #f1ba88;
+  --color-light-green: #e9f5be;
+  --color-mint: #81e7af;
+  --color-teal: #03a791;
 }
 
 /* Header Styles with "zf-" prefix to avoid conflicts */
@@ -42,7 +42,7 @@
   width: 50px;
   height: 50px;
   object-fit: contain;
-  border-radius: 50%;
+  border-radius: 70%;
 }
 
 .zf-brand-title {
@@ -84,6 +84,52 @@
 
 .zf-nav-link:hover {
   color: var(--color-mint);
+}
+
+/* About Us dropdown styling */
+.zf-about-dropdown-container {
+  position: relative;
+  height: 100%;
+}
+
+.zf-about-link {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.zf-about-dropdown {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  background-color: #000;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 160px;
+  z-index: 1000;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.zf-about-dropdown-item {
+  padding: 12px 15px;
+  color: white;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  display: block;
+  cursor: pointer;
+}
+
+.zf-about-dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-mint);
+}
+
+.zf-testimonials-link {
+  cursor: pointer;
 }
 
 /* Services dropdown styling */
@@ -199,7 +245,7 @@
   text-align: left;
   background: none;
   border: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   cursor: pointer;
   color: #e74c3c;
@@ -221,17 +267,66 @@
   padding: 5px;
 }
 
+/* Testimonials Modal/Overlay Styles */
+.zf-testimonials-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.zf-testimonials-container {
+  position: relative;
+  background-color: white;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.zf-close-testimonials {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  z-index: 2001;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.zf-close-testimonials:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
 /* Responsive designs */
 @media (max-width: 992px) {
   .zf-nav-links {
     gap: 0;
   }
-  
+
   .zf-nav-link {
     padding: 0 8px;
     font-size: 15px;
   }
-  
+
   .zf-right-section {
     gap: 15px;
   }
@@ -242,7 +337,7 @@
     display: block;
     order: 3;
   }
-  
+
   .zf-right-section {
     position: absolute;
     top: 70px;
@@ -257,30 +352,49 @@
     z-index: 99;
     height: auto;
   }
-  
+
   .zf-right-section.zf-mobile-menu-active {
     transform: translateY(0);
   }
-  
+
   .zf-nav-links {
     flex-direction: column;
     width: 100%;
     height: auto;
   }
-  
+
   .zf-nav-link {
     padding: 15px 30px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     height: auto;
     width: 100%;
   }
-  
+
+  /* Mobile about dropdown */
+  .zf-about-dropdown-container {
+    width: 100%;
+    height: auto;
+  }
+
+  .zf-about-dropdown {
+    position: static;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: #111;
+  }
+
+  .zf-about-dropdown-item {
+    padding: 12px 45px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
   /* Mobile services dropdown */
   .zf-services-dropdown-container {
     width: 100%;
     height: auto;
   }
-  
+
   .zf-services-dropdown {
     position: static;
     width: 100%;
@@ -288,19 +402,29 @@
     box-shadow: none;
     background-color: #111;
   }
-  
+
   .zf-services-dropdown-item {
     padding: 12px 45px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
-  
+
   .zf-profile-section {
     padding: 15px 30px;
     width: 100%;
   }
-  
+
   .zf-dropdown-menu {
     right: 30px;
+  }
+
+  /* Mobile testimonials modal */
+  .zf-testimonials-overlay {
+    padding: 10px;
+  }
+
+  .zf-testimonials-container {
+    max-width: 95%;
+    max-height: 95%;
   }
 }
 
@@ -308,13 +432,18 @@
   .zf-site-header {
     padding: 10px 15px;
   }
-  
+
   .zf-logo-image {
     width: 40px;
     height: 40px;
   }
-  
+
   .zf-brand-text {
     font-size: 22px;
+  }
+
+  .zf-testimonials-container {
+    max-width: 98%;
+    max-height: 98%;
   }
 }

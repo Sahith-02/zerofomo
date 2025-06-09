@@ -38,6 +38,9 @@ const Calendar = () => {
   const [adminMode, setAdminMode] = useState(false);
   const [blockType, setBlockType] = useState("slot"); // 'slot' or 'day'
   const [blockReason, setBlockReason] = useState("");
+  const [zoomLink, setZoomLink] = useState("");
+  const [isEditingZoomLink, setIsEditingZoomLink] = useState(false);
+  const [tempZoomLink, setTempZoomLink] = useState("");
 
   // Check if user is admin
   useEffect(() => {
@@ -46,6 +49,16 @@ const Calendar = () => {
         const adminDocRef = doc(db, "adminUsers", currentUser.uid);
         const adminDoc = await getDoc(adminDocRef);
         setIsAdmin(adminDoc.exists());
+
+        // Fetch Zoom link if admin
+        if (adminDoc.exists()) {
+          const zoomLinkDoc = await getDoc(
+            doc(db, "adminSettings", "zoomLink")
+          );
+          if (zoomLinkDoc.exists()) {
+            setZoomLink(zoomLinkDoc.data().link || "");
+          }
+        }
       }
     };
     checkAdminStatus();
@@ -328,6 +341,7 @@ const Calendar = () => {
           serviceType: serviceType,
           displayTime: formatTime(selectedTime),
           displayDate: formatDate(selectedDate),
+          zoomLink: zoomLink, // Pass the zoom link to booking details
         },
       });
     } catch (error) {
@@ -425,6 +439,34 @@ const Calendar = () => {
     }
   };
 
+  const handleSaveZoomLink = async () => {
+    try {
+      setLoading(true);
+      await setDoc(doc(db, "adminSettings", "zoomLink"), {
+        link: tempZoomLink,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.uid,
+      });
+      setZoomLink(tempZoomLink);
+      setIsEditingZoomLink(false);
+      alert("Zoom link saved successfully");
+    } catch (error) {
+      console.error("Error saving Zoom link:", error);
+      alert("Error saving Zoom link. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditZoomLink = () => {
+    setTempZoomLink(zoomLink);
+    setIsEditingZoomLink(true);
+  };
+
+  const handleCancelEditZoomLink = () => {
+    setIsEditingZoomLink(false);
+  };
+
   if (!currentUser) {
     return null; // Will redirect to login
   }
@@ -453,6 +495,68 @@ const Calendar = () => {
               >
                 {adminMode ? "Exit Admin Mode" : "Admin Mode"}
               </button>
+
+              {adminMode && (
+                <div className="cal-zoom-link-section">
+                  <h3>Zoom Meeting Link</h3>
+                  {isEditingZoomLink ? (
+                    <div className="cal-zoom-link-edit">
+                      <input
+                        type="text"
+                        value={tempZoomLink}
+                        onChange={(e) => setTempZoomLink(e.target.value)}
+                        placeholder="Enter Zoom meeting link"
+                        className="cal-zoom-link-input"
+                      />
+                      <div className="cal-zoom-link-buttons">
+                        <button
+                          onClick={handleSaveZoomLink}
+                          disabled={loading}
+                          className="cal-zoom-link-save"
+                        >
+                          {loading ? "Saving..." : "Save"}
+                        </button>
+                        <button
+                          onClick={handleCancelEditZoomLink}
+                          className="cal-zoom-link-cancel"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="cal-zoom-link-display">
+                      {zoomLink ? (
+                        <>
+                          <a
+                            href={zoomLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="cal-zoom-link-text"
+                          >
+                            {zoomLink.length > 50
+                              ? `${zoomLink.substring(0, 50)}...`
+                              : zoomLink}
+                          </a>
+                          <button
+                            onClick={handleEditZoomLink}
+                            className="cal-zoom-link-edit-btn"
+                          >
+                            Edit
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={handleEditZoomLink}
+                          className="cal-zoom-link-add-btn"
+                        >
+                          + Add Zoom Link
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

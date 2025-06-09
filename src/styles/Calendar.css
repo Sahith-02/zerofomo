@@ -561,3 +561,132 @@
   padding: 2px 5px;
   margin: 0 5px;
 }
+
+/* Add these new styles at the end of the existing CSS file */
+
+/* Zoom Link Section */
+.cal-zoom-link-section {
+  margin-top: 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.cal-zoom-link-section h3 {
+  color: #ff0000;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.cal-zoom-link-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cal-zoom-link-input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 0.9rem;
+}
+
+.cal-zoom-link-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.cal-zoom-link-save,
+.cal-zoom-link-cancel,
+.cal-zoom-link-edit-btn,
+.cal-zoom-link-add-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cal-zoom-link-save {
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+  color: white;
+  border: none;
+}
+
+.cal-zoom-link-save:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff3333, #ff0000);
+}
+
+.cal-zoom-link-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cal-zoom-link-cancel {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cal-zoom-link-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cal-zoom-link-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cal-zoom-link-text {
+  flex-grow: 1;
+  color: #00aaff;
+  text-decoration: none;
+  word-break: break-all;
+  font-size: 0.9rem;
+}
+
+.cal-zoom-link-text:hover {
+  text-decoration: underline;
+}
+
+.cal-zoom-link-edit-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+}
+
+.cal-zoom-link-edit-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cal-zoom-link-add-btn {
+  background: rgba(0, 170, 255, 0.1);
+  color: #00aaff;
+  border: 1px solid rgba(0, 170, 255, 0.3);
+  width: 100%;
+}
+
+.cal-zoom-link-add-btn:hover {
+  background: rgba(0, 170, 255, 0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .cal-zoom-link-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .cal-zoom-link-edit-btn {
+    width: 100%;
+  }
+}

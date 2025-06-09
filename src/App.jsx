@@ -12,6 +12,8 @@ import { AuthProvider } from "./context/AuthContext";
 import Calendar from "./pages/Calendar";
 import BookingDetails from "./pages/BookingDetails";
 import Payment from "./pages/Payment";
+import Testimonials from "./components/Testimonials";
+import Founder from "./pages/Founder";
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/booking-details" element={<BookingDetails />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/success-stories" element={<Testimonials />} />
+          <Route path="/founder" element={<Founder />} />
         </Routes>
       </Router>
     </AuthProvider>

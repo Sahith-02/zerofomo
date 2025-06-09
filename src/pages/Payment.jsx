@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { db, storage } from "../config/firebase.js";
+import { db } from "../config/firebase.js";
 import {
   doc,
   updateDoc,
@@ -11,8 +11,9 @@ import {
   getDocs,
   addDoc,
   serverTimestamp,
+  getDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import emailjs from "@emailjs/browser";
 import Header from "../components/Header";
 import "../styles/Payment.css";
 
@@ -23,9 +24,20 @@ const Payment = () => {
 
   const bookingData = location.state;
 
+  // EmailJS Configuration - Make sure these match your EmailJS dashboard
+  const EMAILJS_PUBLIC_KEY = "qaNlaQEQClf-lGyio";
+  const EMAILJS_SERVICE_ID = "service_m99nm9f";
+  const USER_TEMPLATE_ID = "template_scj3psn";
+  const ADMIN_TEMPLATE_ID = "template_40fi83r";
+  const FROM_EMAIL = "it@zerofomo.org";
+  const ADMIN_EMAIL = "harichandana.chinni@zerofomo.org";
+
+  const UPI_ID = "chandanachinni2000@ybl";
+  const AMOUNT = "99";
+  const QR_CODE_URL = "/assets/QR.jpg";
+
   const [paymentData, setPaymentData] = useState({
     transactionId: "",
-    paymentScreenshot: null,
     paymentCompleted: false,
   });
 
@@ -34,11 +46,51 @@ const Payment = () => {
   const [receiptData, setReceiptData] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [validatingTransaction, setValidatingTransaction] = useState(false);
+  const [emailSendingError, setEmailSendingError] = useState(null);
+  const [emailJSInitialized, setEmailJSInitialized] = useState(false);
+  const [zoomLink, setZoomLink] = useState("");
 
-  // UPI details
-  const UPI_ID = "chandanachinni2000@ybl";
-  const AMOUNT = "99"; // You can make this dynamic based on service
-  const QR_CODE_URL = "/assets/QR.jpg"; // Replace with your actual QR code image URL
+  // Initialize EmailJS
+  useEffect(() => {
+    const initializeEmailJS = async () => {
+      try {
+        // Initialize EmailJS with your public key
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        console.log("EmailJS initialized successfully");
+        setEmailJSInitialized(true);
+      } catch (error) {
+        console.error("Failed to initialize EmailJS:", error);
+        setEmailSendingError("Email service initialization failed");
+        setEmailJSInitialized(false);
+      }
+    };
+
+    initializeEmailJS();
+  }, []);
+
+  // Fetch Zoom link from Firebase
+  useEffect(() => {
+    const fetchZoomLink = async () => {
+      try {
+        const zoomLinkDocRef = doc(db, "adminSettings", "zoomLink");
+        const zoomLinkDoc = await getDoc(zoomLinkDocRef);
+
+        if (zoomLinkDoc.exists()) {
+          const data = zoomLinkDoc.data();
+          setZoomLink(data.link || "");
+          console.log("Zoom link fetched:", data.link);
+        } else {
+          console.warn("Zoom link document not found");
+          setZoomLink("https://zoom.us/j/meeting-link-not-configured");
+        }
+      } catch (error) {
+        console.error("Error fetching zoom link:", error);
+        setZoomLink("https://zoom.us/j/meeting-link-error");
+      }
+    };
+
+    fetchZoomLink();
+  }, []);
 
   useEffect(() => {
     if (!currentUser) {
@@ -60,44 +112,237 @@ const Payment = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-      if (!allowedTypes.includes(file.type)) {
-        alert("Please upload only JPG, JPEG, or PNG files");
-        return;
-      }
+  // Enhanced date parsing function
+  const parseDate = (dateInput) => {
+    if (!dateInput) return null;
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size should be less than 5MB");
-        return;
-      }
-
-      setPaymentData((prev) => ({
-        ...prev,
-        paymentScreenshot: file,
-      }));
+    if (dateInput instanceof Date) {
+      return dateInput;
     }
+
+    if (typeof dateInput === "string") {
+      const parsedDate = new Date(dateInput);
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate;
+      }
+
+      const ddmmyyyyRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+      const ddmmMatch = dateInput.match(ddmmyyyyRegex);
+      if (ddmmMatch) {
+        const [, day, month, year] = ddmmMatch;
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      }
+
+      const yyyymmddRegex = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+      const yyyymmMatch = dateInput.match(yyyymmddRegex);
+      if (yyyymmMatch) {
+        const [, year, month, day] = yyyymmMatch;
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      }
+    }
+
+    return null;
+  };
+
+  const isValidDate = (dateInput) => {
+    const parsedDate = parseDate(dateInput);
+    return parsedDate !== null && !isNaN(parsedDate.getTime());
+  };
+
+  const isValidTime = (timeStr) => {
+    if (!timeStr || typeof timeStr !== "string") return false;
+    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeRegex.test(timeStr);
   };
 
   const handleTermsChange = (e) => {
     setTermsAccepted(e.target.checked);
   };
 
-  // Check if transaction ID already exists in database
+  const generateMeetingDetails = (bookingData) => {
+    return {
+      meetingNote:
+        "Meeting link will be provided via email before the appointment",
+      meetingProvider: "Zoom (Link to be shared)",
+      bookingReference: bookingData.bookingId,
+      zoomLink: zoomLink,
+    };
+  };
+
+  // Updated email sending function without meeting ID and password
+  const sendBookingEmails = async (bookingData, meetingDetails) => {
+    console.log("Attempting to send emails...");
+
+    if (!emailJSInitialized) {
+      throw new Error("EmailJS service is not properly initialized");
+    }
+
+    // Validate email addresses
+    const userEmail = currentUser?.email;
+    if (!userEmail || !userEmail.includes("@")) {
+      throw new Error("Invalid user email address");
+    }
+
+    if (!ADMIN_EMAIL || !ADMIN_EMAIL.includes("@")) {
+      throw new Error("Invalid admin email address");
+    }
+
+    // SIMPLIFIED email parameters that match standard EmailJS template structure
+    const userEmailParams = {
+      // Primary recipient (this should match your template's "To Email" field)
+      email: userEmail,
+      to_email: userEmail, // Backup parameter name
+
+      // Basic template variables (keep these simple and match your template exactly)
+      user_name: bookingData.userDetails?.fullName || "Customer",
+      service_type: bookingData.serviceType || "N/A",
+      appointment_date: bookingData.displayDate || "N/A",
+      appointment_time: bookingData.displayTime || "N/A",
+      duration: bookingData.duration || "N/A",
+      transaction_id: paymentData.transactionId || "N/A",
+      booking_reference: meetingDetails.bookingReference || "N/A",
+      amount: AMOUNT,
+      zoom_link: meetingDetails.zoomLink || "N/A",
+      meeting_note: meetingDetails.meetingNote || "N/A",
+
+      // EmailJS standard fields
+      from_name: "ZeroFOMO Team",
+      reply_to: FROM_EMAIL,
+    };
+
+    const adminEmailParams = {
+      // Primary recipient (this should match your template's "To Email" field)
+      email: ADMIN_EMAIL,
+      to_email: ADMIN_EMAIL, // Backup parameter name
+
+      // Basic template variables
+      user_name: bookingData.userDetails?.fullName || "Customer",
+      user_email: userEmail,
+      service_type: bookingData.serviceType || "N/A",
+      appointment_date: bookingData.displayDate || "N/A",
+      appointment_time: bookingData.displayTime || "N/A",
+      duration: bookingData.duration || "N/A",
+      transaction_id: paymentData.transactionId || "N/A",
+      booking_reference: meetingDetails.bookingReference || "N/A",
+      amount: AMOUNT,
+      zoom_link: meetingDetails.zoomLink || "N/A",
+
+      // EmailJS standard fields
+      from_name: "ZeroFOMO System",
+      reply_to: FROM_EMAIL,
+    };
+
+    console.log("Email params prepared:", {
+      userParams: userEmailParams,
+      adminParams: adminEmailParams,
+    });
+
+    try {
+      const emailResults = [];
+
+      // Send email to user with proper error handling
+      console.log("Sending email to user...");
+      try {
+        const userEmailResult = await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          USER_TEMPLATE_ID,
+          userEmailParams
+        );
+        console.log("User email sent successfully:", userEmailResult);
+        emailResults.push({
+          type: "user",
+          success: true,
+          result: userEmailResult,
+        });
+      } catch (userEmailError) {
+        console.error("User email failed:", userEmailError);
+        emailResults.push({
+          type: "user",
+          success: false,
+          error: userEmailError,
+        });
+      }
+
+      // Add delay between emails to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      // Send email to admin with proper error handling
+      console.log("Sending email to admin...");
+      try {
+        const adminEmailResult = await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          ADMIN_TEMPLATE_ID,
+          adminEmailParams
+        );
+        console.log("Admin email sent successfully:", adminEmailResult);
+        emailResults.push({
+          type: "admin",
+          success: true,
+          result: adminEmailResult,
+        });
+      } catch (adminEmailError) {
+        console.error("Admin email failed:", adminEmailError);
+        emailResults.push({
+          type: "admin",
+          success: false,
+          error: adminEmailError,
+        });
+      }
+
+      // Check if at least one email was sent successfully
+      const successfulEmails = emailResults.filter((result) => result.success);
+
+      if (successfulEmails.length > 0) {
+        console.log(
+          `Successfully sent ${successfulEmails.length} out of ${emailResults.length} emails`
+        );
+        return {
+          success: true,
+          results: emailResults,
+          partialSuccess: successfulEmails.length < emailResults.length,
+        };
+      } else {
+        throw new Error("All email sending attempts failed");
+      }
+    } catch (error) {
+      console.error("Email sending error:", error);
+
+      // Enhanced error handling
+      let errorMessage = "Failed to send confirmation emails";
+
+      if (error.status === 400) {
+        errorMessage = "Invalid email configuration. Please contact support.";
+      } else if (error.status === 401 || error.status === 403) {
+        errorMessage = "Email service authentication failed.";
+      } else if (error.status === 404) {
+        errorMessage =
+          "Email service or template not found. Please contact support.";
+      } else if (error.status === 422) {
+        errorMessage =
+          "Email address configuration error. Please check template settings.";
+      } else if (error.text?.includes("Account not found")) {
+        errorMessage =
+          "Email service account not found. Please contact support.";
+      } else if (error.text?.includes("Template")) {
+        errorMessage = "Email template configuration error.";
+      } else if (error.text?.includes("recipients address is empty")) {
+        errorMessage =
+          "Email template configuration error - recipient field is empty.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      throw new Error(errorMessage);
+    }
+  };
+
   const checkTransactionIdExists = async (transactionId) => {
     try {
       setValidatingTransaction(true);
-
-      // Query all collections that might contain transaction IDs
       const paymentsQuery = query(
         collection(db, "payments"),
         where("transactionId", "==", transactionId)
       );
-
       const bookingsQuery = query(
         collection(db, "bookings"),
         where("transactionId", "==", transactionId)
@@ -117,38 +362,9 @@ const Payment = () => {
     }
   };
 
-  // Upload screenshot to Firebase Storage
-  const uploadScreenshot = async (file, userId, transactionId) => {
-    try {
-      const timestamp = new Date().getTime();
-      const fileName = `payment_screenshot_${transactionId}_${timestamp}`;
-      const storageRef = ref(
-        storage,
-        `users/${userId}/payment-screenshots/${fileName}`
-      );
-
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
-
-      return {
-        url: downloadURL,
-        fileName: fileName,
-        uploadPath: `users/${userId}/payment-screenshots/${fileName}`,
-      };
-    } catch (error) {
-      console.error("Error uploading screenshot:", error);
-      throw new Error("Failed to upload screenshot. Please try again.");
-    }
-  };
-
   const validatePayment = () => {
     if (!paymentData.transactionId.trim()) {
       alert("Transaction ID is required");
-      return false;
-    }
-
-    if (!paymentData.paymentScreenshot) {
-      alert("Payment screenshot is required");
       return false;
     }
 
@@ -157,7 +373,6 @@ const Payment = () => {
       return false;
     }
 
-    // Additional validation for transaction ID format (optional)
     const transactionIdPattern = /^[A-Za-z0-9]+$/;
     if (!transactionIdPattern.test(paymentData.transactionId)) {
       alert("Transaction ID should contain only letters and numbers");
@@ -167,17 +382,64 @@ const Payment = () => {
     return true;
   };
 
+  const validateBookingData = () => {
+    if (!bookingData) {
+      alert(
+        "Booking data is missing. Please go back and create a new booking."
+      );
+      return false;
+    }
+
+    console.log("Booking Data Debug:", {
+      date: bookingData.date,
+      time: bookingData.time,
+      displayDate: bookingData.displayDate,
+      displayTime: bookingData.displayTime,
+      fullBookingData: bookingData,
+    });
+
+    if (!bookingData.date || !bookingData.time) {
+      alert(`Booking date and time are required. 
+      Date received: ${bookingData.date}
+      Time received: ${bookingData.time}
+      Please go back and select a valid date and time.`);
+      return false;
+    }
+
+    if (!isValidDate(bookingData.date)) {
+      alert(`Invalid booking date format. 
+      Date received: "${bookingData.date}"
+      Please go back and select a valid date.`);
+      return false;
+    }
+
+    if (!isValidTime(bookingData.time)) {
+      alert(`Invalid booking time format. 
+      Time received: "${bookingData.time}"
+      Expected format: HH:MM (24-hour format)
+      Please go back and select a valid time.`);
+      return false;
+    }
+
+    return true;
+  };
+
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
+    setEmailSendingError(null);
 
     if (!validatePayment()) {
+      return;
+    }
+
+    if (!validateBookingData()) {
       return;
     }
 
     try {
       setLoading(true);
 
-      // Step 1: Check if transaction ID already exists
+      // Check if transaction ID already exists
       const transactionExists = await checkTransactionIdExists(
         paymentData.transactionId
       );
@@ -188,14 +450,9 @@ const Payment = () => {
         return;
       }
 
-      // Step 2: Upload screenshot to Firebase Storage
-      const screenshotData = await uploadScreenshot(
-        paymentData.paymentScreenshot,
-        currentUser.uid,
-        paymentData.transactionId
-      );
+      const meetingDetails = generateMeetingDetails(bookingData);
 
-      // Step 3: Create payment record in user's subcollection
+      // Create payment record
       const userPaymentsRef = collection(
         db,
         `users/${currentUser.uid}/payments`
@@ -210,23 +467,19 @@ const Payment = () => {
         appointmentDate: bookingData.displayDate,
         appointmentTime: bookingData.displayTime,
         duration: bookingData.duration,
-        screenshot: {
-          url: screenshotData.url,
-          fileName: screenshotData.fileName,
-          uploadPath: screenshotData.uploadPath,
-        },
         userDetails: {
           userId: currentUser.uid,
           email: currentUser.email,
           fullName: bookingData.userDetails.fullName,
         },
+        meetingDetails: meetingDetails,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
 
       const paymentDocRef = await addDoc(userPaymentsRef, paymentRecord);
 
-      // Step 4: Also create a record in the main payments collection for easy querying
+      // Add to main payments collection
       const mainPaymentsRef = collection(db, "payments");
       await addDoc(mainPaymentsRef, {
         ...paymentRecord,
@@ -234,20 +487,51 @@ const Payment = () => {
         userPaymentPath: `users/${currentUser.uid}/payments/${paymentDocRef.id}`,
       });
 
-      // Step 5: Update booking with payment information
+      // Update booking
       const bookingRef = doc(db, "bookings", bookingData.bookingId);
       await updateDoc(bookingRef, {
         paymentStatus: "completed",
         transactionId: paymentData.transactionId,
         paymentDate: serverTimestamp(),
-        paymentScreenshotURL: screenshotData.url,
-        paymentScreenshotUploaded: true,
         bookingConfirmed: true,
         paymentDocId: paymentDocRef.id,
+        meetingDetails: meetingDetails,
         updatedAt: serverTimestamp(),
       });
 
-      // Step 6: Generate receipt data
+      // Try to send emails with better error handling
+      let emailResult = null;
+      let emailSuccess = false;
+
+      try {
+        if (emailJSInitialized) {
+          emailResult = await sendBookingEmails(bookingData, meetingDetails);
+          emailSuccess = true;
+          console.log("Emails sent successfully:", emailResult);
+
+          // Update booking with email success info
+          await updateDoc(bookingRef, {
+            emailStatus: "sent",
+            emailSentAt: serverTimestamp(),
+            emailResults: emailResult.results || [],
+            partialEmailSuccess: emailResult.partialSuccess || false,
+          });
+        } else {
+          throw new Error("EmailJS service not initialized");
+        }
+      } catch (emailError) {
+        console.error("Email sending failed:", emailError);
+        setEmailSendingError(emailError.message);
+
+        // Update booking with email failure info
+        await updateDoc(bookingRef, {
+          emailStatus: "failed",
+          emailError: emailError.message,
+          emailFailedAt: serverTimestamp(),
+        });
+      }
+
+      // Generate receipt
       const receipt = {
         receiptId: `RCP-${Date.now()}`,
         bookingId: bookingData.bookingId,
@@ -256,24 +540,21 @@ const Payment = () => {
         paymentDate: new Date().toLocaleDateString(),
         paymentTime: new Date().toLocaleTimeString(),
         customerName: bookingData.userDetails.fullName,
-        customerEmail: bookingData.userDetails.emailId,
+        customerEmail: currentUser.email,
         serviceType: bookingData.serviceType,
         appointmentDate: bookingData.displayDate,
         appointmentTime: bookingData.displayTime,
         duration: bookingData.duration,
         paymentDocId: paymentDocRef.id,
+        meetingNote: meetingDetails.meetingNote,
+        zoomLink: meetingDetails.zoomLink,
+        emailSent: emailSuccess,
+        emailError: emailSendingError,
       };
 
       setReceiptData(receipt);
       setShowReceipt(true);
       setPaymentData((prev) => ({ ...prev, paymentCompleted: true }));
-
-      // Success message
-      console.log("Payment processed successfully:", {
-        paymentDocId: paymentDocRef.id,
-        transactionId: paymentData.transactionId,
-        screenshotURL: screenshotData.url,
-      });
     } catch (error) {
       console.error("Error processing payment:", error);
       alert(error.message || "Error processing payment. Please try again.");
@@ -302,16 +583,21 @@ Date: ${receiptData.appointmentDate}
 Time: ${receiptData.appointmentTime}
 Duration: ${receiptData.duration} minutes
 
+Meeting Details:
+Zoom Link: ${receiptData.zoomLink}
+Note: ${receiptData.meetingNote}
+
 Payment Details:
 Amount: ₹${receiptData.amount}
 Payment Date: ${receiptData.paymentDate}
 Payment Time: ${receiptData.paymentTime}
 Status: PAID
 
+Email Status: ${receiptData.emailSent ? "SENT" : "FAILED"}
+${receiptData.emailError ? `Email Error: ${receiptData.emailError}` : ""}
+
 Thank you for choosing ZeroFOMO!
 Contact us: support@zerofomo.com
-
-Note: Your payment screenshot has been securely stored for verification purposes.
     `;
 
     const blob = new Blob([receiptContent], { type: "text/plain" });
@@ -324,6 +610,23 @@ Note: Your payment screenshot has been securely stored for verification purposes
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  // Show loading state while EmailJS initializes
+  if (!emailJSInitialized && !emailSendingError) {
+    return (
+      <div className="payment-page">
+        <Header />
+        <div className="payment-container">
+          <div className="loading-container">
+            <h2>Initializing Email Service...</h2>
+            <p>
+              Please wait while we set up the email service for confirmations.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentUser || !bookingData) {
     return null;
@@ -339,6 +642,24 @@ Note: Your payment screenshot has been securely stored for verification purposes
               <h1>Payment Successful!</h1>
               <div className="success-icon">✅</div>
             </div>
+
+            {emailSendingError && (
+              <div className="email-error-notice">
+                <h3>⚠️ Email Notification Issue</h3>
+                <p>
+                  Your payment was successful, but we couldn't send the
+                  confirmation email:
+                </p>
+                <p>
+                  <strong>{emailSendingError}</strong>
+                </p>
+                <p>
+                  Please contact support at{" "}
+                  <strong>support@zerofomo.com</strong> with your booking ID:{" "}
+                  <strong>{receiptData.bookingId}</strong>
+                </p>
+              </div>
+            )}
 
             <div className="receipt-content">
               <h2>Payment Receipt</h2>
@@ -356,10 +677,6 @@ Note: Your payment screenshot has been securely stored for verification purposes
                 <div className="receipt-row">
                   <span>Transaction ID:</span>
                   <span>{receiptData.transactionId}</span>
-                </div>
-                <div className="receipt-row">
-                  <span>Payment Record ID:</span>
-                  <span>{receiptData.paymentDocId}</span>
                 </div>
               </div>
 
@@ -396,6 +713,18 @@ Note: Your payment screenshot has been securely stored for verification purposes
               </div>
 
               <div className="receipt-section">
+                <h3>Meeting Information</h3>
+                <div className="receipt-row">
+                  <span>Zoom Link:</span>
+                  <span>{receiptData.zoomLink}</span>
+                </div>
+                <div className="receipt-row">
+                  <span>Note:</span>
+                  <span>{receiptData.meetingNote}</span>
+                </div>
+              </div>
+
+              <div className="receipt-section">
                 <h3>Payment Information</h3>
                 <div className="receipt-row">
                   <span>Amount:</span>
@@ -413,14 +742,15 @@ Note: Your payment screenshot has been securely stored for verification purposes
                   <span>Status:</span>
                   <span className="status-paid">PAID</span>
                 </div>
-              </div>
-
-              <div className="receipt-section">
-                <div className="security-info">
-                  <p>
-                    <strong>🔒 Security:</strong> Your payment screenshot has
-                    been securely stored for verification purposes.
-                  </p>
+                <div className="receipt-row">
+                  <span>Email Status:</span>
+                  <span
+                    className={
+                      receiptData.emailSent ? "status-sent" : "status-failed"
+                    }
+                  >
+                    {receiptData.emailSent ? "SENT" : "FAILED"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -433,6 +763,24 @@ Note: Your payment screenshot has been securely stored for verification purposes
                 Continue to Dashboard
               </button>
             </div>
+
+            <div className="important-notice">
+              <h3>📧 Important Notice</h3>
+              {receiptData.emailSent ? (
+                <p>
+                  You will receive a confirmation email with the Zoom meeting
+                  link shortly before your appointment. Please check your email
+                  regularly.
+                </p>
+              ) : (
+                <p>
+                  Due to an email service issue, you may not receive the
+                  confirmation email automatically. Please contact support at{" "}
+                  <strong>support@zerofomo.com</strong> with your booking ID to
+                  receive your meeting details manually.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -444,20 +792,32 @@ Note: Your payment screenshot has been securely stored for verification purposes
       <Header />
 
       <div className="payment-container">
-        {/* Payment Disclaimer */}
+        {emailSendingError && (
+          <div className="email-service-warning">
+            <h3>⚠️ Email Service Notice</h3>
+            <p>
+              There's currently an issue with our email service:{" "}
+              {emailSendingError}
+            </p>
+            <p>
+              Your booking will still be processed successfully, but you may
+              need to contact support for meeting details.
+            </p>
+          </div>
+        )}
+
         <div className="payment-disclaimer">
           <h2>Payment Disclaimer</h2>
           <div className="disclaimer-content">
             <p>
               Please double-check the UPI ID and amount before making the
-              payment. After payment, upload the screenshot as proof.
+              payment.
             </p>
 
             <div className="important-note">
               <h3>✅ IMPORTANT: We are not responsible for:</h3>
               <ul>
                 <li>Payments made to the wrong UPI ID</li>
-                <li>Incorrect or fake screenshots</li>
                 <li>
                   Duplicate transactions (same transaction ID used multiple
                   times)
@@ -482,7 +842,6 @@ Note: Your payment screenshot has been securely stored for verification purposes
           </div>
         </div>
 
-        {/* Terms and Conditions Checkbox */}
         <div className="terms-acceptance">
           <div className="terms-checkbox-container">
             <input
@@ -501,10 +860,8 @@ Note: Your payment screenshot has been securely stored for verification purposes
           </div>
         </div>
 
-        {/* Conditional Rendering - Show only if terms are accepted */}
         {termsAccepted && (
           <>
-            {/* Booking Summary */}
             <div className="booking-summary">
               <h2>Booking Summary</h2>
               <div className="summary-grid">
@@ -531,7 +888,6 @@ Note: Your payment screenshot has been securely stored for verification purposes
               </div>
             </div>
 
-            {/* Payment Methods */}
             <div className="payment-methods">
               <h2>Payment Method</h2>
 
@@ -575,7 +931,6 @@ Note: Your payment screenshot has been securely stored for verification purposes
               </div>
             </div>
 
-            {/* Payment Verification Form */}
             <div className="payment-verification">
               <h2>Payment Verification</h2>
               <form onSubmit={handlePaymentSubmit} className="payment-form">
@@ -604,38 +959,6 @@ Note: Your payment screenshot has been securely stored for verification purposes
                   )}
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="paymentScreenshot">
-                    Payment Screenshot <span className="required">*</span>
-                  </label>
-                  <div className="file-upload-container">
-                    <input
-                      type="file"
-                      id="paymentScreenshot"
-                      name="paymentScreenshot"
-                      accept="image/jpeg,image/jpg,image/png"
-                      onChange={handleFileChange}
-                      required
-                      disabled={loading}
-                    />
-                    <div className="file-upload-info">
-                      {paymentData.paymentScreenshot ? (
-                        <span className="file-selected">
-                          ✅ {paymentData.paymentScreenshot.name}
-                        </span>
-                      ) : (
-                        <span className="file-placeholder">
-                          Click to upload payment screenshot
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <small>
-                    Upload screenshot of your payment (JPG, PNG only, max 5MB).
-                    Screenshot will be securely stored in your account.
-                  </small>
-                </div>
-
                 <div className="form-actions">
                   <button
                     type="button"
@@ -660,19 +983,25 @@ Note: Your payment screenshot has been securely stored for verification purposes
               </form>
             </div>
 
-            {/* Security Note */}
             <div className="security-note">
-              <h3>🔒 Security & Storage Information</h3>
+              <h3>🔒 Security Information</h3>
               <p>
                 Your payment information is secure. We store the transaction ID
-                and payment screenshot in your personal account section for
-                verification purposes. We never store your banking details or
-                UPI PIN.
+                in your personal account section for verification purposes.
               </p>
               <p>
                 <strong>Duplicate Prevention:</strong> Each transaction ID can
                 only be used once to prevent duplicate payments and ensure
                 payment integrity.
+              </p>
+            </div>
+
+            <div className="meeting-notice">
+              <h3>📹 Meeting Information</h3>
+              <p>
+                After successful payment, you will receive a confirmation email.
+                The Zoom meeting link will be provided via email closer to your
+                appointment time.
               </p>
             </div>
           </>

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Testimonials.css"; // Ensure you have the appropriate CSS file for styling
+import "../styles/Testimonials.css";
+import Header from "./Header";
 
 const Testimonials = () => {
+ 
+ // Default to false if flag is not passed
   const testimonials = [
     {
       id: 1,
@@ -137,38 +140,39 @@ const Testimonials = () => {
       setCurrentIndex((prevIndex) =>
         prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
       );
-    }, 5000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
   return (
-    <div className="testimonials-unique-container">
-      <div className="testimonials-unique-header">
-        <h2>Our Success Stories</h2>
-        <p>You can't fake this kind of love.</p>
-      </div>
+    <div>
+        <Header />
+      <div className="testimonials-unique-container">
+        <div className="testimonials-unique-header">
+          <h2>Our Success Stories</h2>
+          <p>You can't fake this kind of love.</p>
+        </div>
 
-      <div className="testimonials-unique-carousel-container">
-        <div
-          className="testimonials-unique-carousel-track"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
-          {testimonials.map((testimonial) => (
-            <div key={testimonial.id} className="testimonials-unique-card">
-              <div className="testimonials-unique-quote-icon">❝</div>
-              <p className="testimonials-unique-text">{testimonial.text}</p>
-              <div className="testimonials-unique-footer">
-                <div className="testimonials-unique-college-badge">
-                  {testimonial.college}
+        <div className="testimonials-unique-carousel-container">
+          <div
+            className="testimonials-unique-carousel-track"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {testimonials.map((testimonial) => (
+              <div key={testimonial.id} className="testimonials-unique-card">
+                <div className="testimonials-unique-quote-icon">❝</div>
+                <p className="testimonials-unique-text">{testimonial.text}</p>
+                <div className="testimonials-unique-footer">
+                  <div className="testimonials-unique-college-badge">
+                    {testimonial.college}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-
-     
     </div>
   );
 };
