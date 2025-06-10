@@ -77,6 +77,7 @@ const Payment = () => {
 
         if (zoomLinkDoc.exists()) {
           const data = zoomLinkDoc.data();
+          console.log("Full document data:", data); // Log entire document
           setZoomLink(data.link || "");
           console.log("Zoom link fetched:", data.link);
         } else {
@@ -84,11 +85,12 @@ const Payment = () => {
           setZoomLink("https://zoom.us/j/meeting-link-not-configured");
         }
       } catch (error) {
-        console.error("Error fetching zoom link:", error);
+        console.error("Detailed error fetching zoom link:", error);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
         setZoomLink("https://zoom.us/j/meeting-link-error");
       }
     };
-
     fetchZoomLink();
   }, []);
 
