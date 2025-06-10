@@ -1,18 +1,69 @@
 [build]
-  command = "npm run build"
-  publish = "dist"  # Change to "build" if that's your build folder
+  # Your build settings
+  publish = "dist"  # or your build output directory
+  command = "npm run build"  # or your build command
 
-# Automatic image optimization
+# Image optimization and caching
 [[headers]]
-  for = "/assets/*"
+  for = "/assets/images/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+[[headers]]
+  for = "*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.avif"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# CSS and JS caching
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Enable Brotli compression
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Preload critical resources
+[[headers]]
+  for = "/"
+  [headers.values]
+    Link = '''
+    </assets/critical.css>; rel=preload; as=style,
+    </assets/hero-image.webp>; rel=preload; as=image
+    '''
+
+# Enable server push for critical resources (HTTP/2)
+[[headers]]
+  for = "/"
+  [headers.values]
+    Link = '''
+    </assets/critical.css>; rel=preload; as=style; crossorigin,
+    </assets/main.js>; rel=preload; as=script; crossorigin
+    '''
+
+# Redirect rules (if needed)
+[[redirects]]
+  from = "/old-path/*"
+  to = "/new-path/:splat"
+  status = 301
+
+# Form handling (if you have forms)
 [build.processing]
   skip_processing = false
-
-[build.processing.images]
-  compress = true
 
 [build.processing.css]
   bundle = true
@@ -21,3 +72,9 @@
 [build.processing.js]
   bundle = true
   minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
