@@ -6,12 +6,12 @@ import Header from "../components/Header";
 const IndividualServicesPage = () => {
   const navigate = useNavigate();
 
-  const handleBookCall = (serviceType) => {
-    // Navigate to calendar with 45-minute duration for individual services
+  const handleBookCall = (serviceType, price) => {
     navigate("/calendar", {
       state: {
         duration: 45,
         serviceType: serviceType,
+        price: price,
       },
     });
   };
@@ -43,12 +43,36 @@ const IndividualServicesPage = () => {
               </div>
             </div>
 
-            <button
-              className="book-call-btn"
-              onClick={() => handleBookCall("Resume Service")}
-            >
-              Book a Call
-            </button>
+            {/* Compact Service Card */}
+            <div className="compact-service-card">
+              <div className="compact-service-header">
+                <div className="service-badge">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>45 mins</span>
+                </div>
+                <button
+                  className="compact-price-btn"
+                  onClick={() => handleBookCall("Resume Service", 500)}
+                >
+                  ₹500
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* LOR Section */}
@@ -73,12 +97,36 @@ const IndividualServicesPage = () => {
               </div>
             </div>
 
-            <button
-              className="book-call-btn"
-              onClick={() => handleBookCall("LOR Service")}
-            >
-              Book a Call
-            </button>
+            {/* Compact Service Card */}
+            <div className="compact-service-card">
+              <div className="compact-service-header">
+                <div className="service-badge">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>45 mins</span>
+                </div>
+                <button
+                  className="compact-price-btn"
+                  onClick={() => handleBookCall("LOR Service", 500)}
+                >
+                  ₹500
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Essays / SOP Section */}
@@ -103,12 +151,36 @@ const IndividualServicesPage = () => {
               </div>
             </div>
 
-            <button
-              className="book-call-btn"
-              onClick={() => handleBookCall("Essays / SOP Service")}
-            >
-              Book a Call
-            </button>
+            {/* Compact Service Card */}
+            <div className="compact-service-card">
+              <div className="compact-service-header">
+                <div className="service-badge">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>45 mins</span>
+                </div>
+                <button
+                  className="compact-price-btn"
+                  onClick={() => handleBookCall("Essays / SOP Service", 500)}
+                >
+                  ₹500
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Interview Section */}
@@ -133,12 +205,36 @@ const IndividualServicesPage = () => {
               </div>
             </div>
 
-            <button
-              className="book-call-btn"
-              onClick={() => handleBookCall("Interview Service")}
-            >
-              Book a Call
-            </button>
+            {/* Compact Service Card */}
+            <div className="compact-service-card">
+              <div className="compact-service-header">
+                <div className="service-badge">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>45 mins</span>
+                </div>
+                <button
+                  className="compact-price-btn"
+                  onClick={() => handleBookCall("Interview Service", 500)}
+                >
+                  ₹500
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

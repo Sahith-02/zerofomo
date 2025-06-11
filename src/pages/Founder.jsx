@@ -8,6 +8,7 @@ const Founder = () => {
     <div>
       <Header />
       <div className="founder-container">
+        <h1>Hi, I'm Hari Chandana — Founder of ZeroFOMO.</h1>
         <div className="founder-content">
           <div className="founder-image">
             <img
@@ -16,8 +17,6 @@ const Founder = () => {
             />
           </div>
           <div className="founder-text">
-            <h1>Hi, I'm Hari Chandana — Founder of ZeroFOMO.</h1>
-
             <p>
               I was never a topper at school, mainly because I loved sports and
               dance. But I managed to stay in the top 5% in my board exams

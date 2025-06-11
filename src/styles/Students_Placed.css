@@ -30,7 +30,7 @@
   /* Card flip styling */
   .region-card {
     perspective: 1000px;
-    height: 300px;
+    height: 350px;
     cursor: pointer;
     /* Width is set inline via style attribute */
   }

@@ -33,7 +33,7 @@ const Payment = () => {
   const ADMIN_EMAIL = "harichandana.chinni@zerofomo.org";
 
   const UPI_ID = "chandanachinni2000@ybl";
-  const AMOUNT = "99";
+  const AMOUNT = bookingData?.price || 0;
   const QR_CODE_URL = "/assets/QR.jpg";
 
   const [paymentData, setPaymentData] = useState({
@@ -54,12 +54,9 @@ const Payment = () => {
   useEffect(() => {
     const initializeEmailJS = async () => {
       try {
-        // Initialize EmailJS with your public key
         emailjs.init(EMAILJS_PUBLIC_KEY);
-        console.log("EmailJS initialized successfully");
         setEmailJSInitialized(true);
       } catch (error) {
-        console.error("Failed to initialize EmailJS:", error);
         setEmailSendingError("Email service initialization failed");
         setEmailJSInitialized(false);
       }
@@ -77,17 +74,11 @@ const Payment = () => {
 
         if (zoomLinkDoc.exists()) {
           const data = zoomLinkDoc.data();
-          console.log("Full document data:", data); // Log entire document
           setZoomLink(data.link || "");
-          console.log("Zoom link fetched:", data.link);
         } else {
-          console.warn("Zoom link document not found");
           setZoomLink("https://zoom.us/j/meeting-link-not-configured");
         }
       } catch (error) {
-        console.error("Detailed error fetching zoom link:", error);
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
         setZoomLink("https://zoom.us/j/meeting-link-error");
       }
     };
@@ -173,8 +164,6 @@ const Payment = () => {
 
   // Updated email sending function without meeting ID and password
   const sendBookingEmails = async (bookingData, meetingDetails) => {
-    console.log("Attempting to send emails...");
-
     if (!emailJSInitialized) {
       throw new Error("EmailJS service is not properly initialized");
     }
@@ -191,11 +180,8 @@ const Payment = () => {
 
     // SIMPLIFIED email parameters that match standard EmailJS template structure
     const userEmailParams = {
-      // Primary recipient (this should match your template's "To Email" field)
       email: userEmail,
-      to_email: userEmail, // Backup parameter name
-
-      // Basic template variables (keep these simple and match your template exactly)
+      to_email: userEmail,
       user_name: bookingData.userDetails?.fullName || "Customer",
       service_type: bookingData.serviceType || "N/A",
       appointment_date: bookingData.displayDate || "N/A",
@@ -206,18 +192,13 @@ const Payment = () => {
       amount: AMOUNT,
       zoom_link: meetingDetails.zoomLink || "N/A",
       meeting_note: meetingDetails.meetingNote || "N/A",
-
-      // EmailJS standard fields
       from_name: "ZeroFOMO Team",
       reply_to: FROM_EMAIL,
     };
 
     const adminEmailParams = {
-      // Primary recipient (this should match your template's "To Email" field)
       email: ADMIN_EMAIL,
-      to_email: ADMIN_EMAIL, // Backup parameter name
-
-      // Basic template variables
+      to_email: ADMIN_EMAIL,
       user_name: bookingData.userDetails?.fullName || "Customer",
       user_email: userEmail,
       service_type: bookingData.serviceType || "N/A",
@@ -228,36 +209,26 @@ const Payment = () => {
       booking_reference: meetingDetails.bookingReference || "N/A",
       amount: AMOUNT,
       zoom_link: meetingDetails.zoomLink || "N/A",
-
-      // EmailJS standard fields
       from_name: "ZeroFOMO System",
       reply_to: FROM_EMAIL,
     };
-
-    console.log("Email params prepared:", {
-      userParams: userEmailParams,
-      adminParams: adminEmailParams,
-    });
 
     try {
       const emailResults = [];
 
       // Send email to user with proper error handling
-      console.log("Sending email to user...");
       try {
         const userEmailResult = await emailjs.send(
           EMAILJS_SERVICE_ID,
           USER_TEMPLATE_ID,
           userEmailParams
         );
-        console.log("User email sent successfully:", userEmailResult);
         emailResults.push({
           type: "user",
           success: true,
           result: userEmailResult,
         });
       } catch (userEmailError) {
-        console.error("User email failed:", userEmailError);
         emailResults.push({
           type: "user",
           success: false,
@@ -269,21 +240,18 @@ const Payment = () => {
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Send email to admin with proper error handling
-      console.log("Sending email to admin...");
       try {
         const adminEmailResult = await emailjs.send(
           EMAILJS_SERVICE_ID,
           ADMIN_TEMPLATE_ID,
           adminEmailParams
         );
-        console.log("Admin email sent successfully:", adminEmailResult);
         emailResults.push({
           type: "admin",
           success: true,
           result: adminEmailResult,
         });
       } catch (adminEmailError) {
-        console.error("Admin email failed:", adminEmailError);
         emailResults.push({
           type: "admin",
           success: false,
@@ -295,9 +263,6 @@ const Payment = () => {
       const successfulEmails = emailResults.filter((result) => result.success);
 
       if (successfulEmails.length > 0) {
-        console.log(
-          `Successfully sent ${successfulEmails.length} out of ${emailResults.length} emails`
-        );
         return {
           success: true,
           results: emailResults,
@@ -307,8 +272,6 @@ const Payment = () => {
         throw new Error("All email sending attempts failed");
       }
     } catch (error) {
-      console.error("Email sending error:", error);
-
       // Enhanced error handling
       let errorMessage = "Failed to send confirmation emails";
 
@@ -357,7 +320,6 @@ const Payment = () => {
 
       return !paymentsSnapshot.empty || !bookingsSnapshot.empty;
     } catch (error) {
-      console.error("Error checking transaction ID:", error);
       throw new Error("Failed to validate transaction ID. Please try again.");
     } finally {
       setValidatingTransaction(false);
@@ -391,14 +353,6 @@ const Payment = () => {
       );
       return false;
     }
-
-    console.log("Booking Data Debug:", {
-      date: bookingData.date,
-      time: bookingData.time,
-      displayDate: bookingData.displayDate,
-      displayTime: bookingData.displayTime,
-      fullBookingData: bookingData,
-    });
 
     if (!bookingData.date || !bookingData.time) {
       alert(`Booking date and time are required. 
@@ -489,17 +443,24 @@ const Payment = () => {
         userPaymentPath: `users/${currentUser.uid}/payments/${paymentDocRef.id}`,
       });
 
-      // Update booking
+      // Update booking with clean data only
       const bookingRef = doc(db, "bookings", bookingData.bookingId);
-      await updateDoc(bookingRef, {
+      const bookingUpdateData = {
         paymentStatus: "completed",
         transactionId: paymentData.transactionId,
         paymentDate: serverTimestamp(),
         bookingConfirmed: true,
         paymentDocId: paymentDocRef.id,
-        meetingDetails: meetingDetails,
+        meetingDetails: {
+          meetingNote: meetingDetails.meetingNote,
+          meetingProvider: meetingDetails.meetingProvider,
+          bookingReference: meetingDetails.bookingReference,
+          zoomLink: meetingDetails.zoomLink,
+        },
         updatedAt: serverTimestamp(),
-      });
+      };
+
+      await updateDoc(bookingRef, bookingUpdateData);
 
       // Try to send emails with better error handling
       let emailResult = null;
@@ -509,28 +470,29 @@ const Payment = () => {
         if (emailJSInitialized) {
           emailResult = await sendBookingEmails(bookingData, meetingDetails);
           emailSuccess = true;
-          console.log("Emails sent successfully:", emailResult);
 
-          // Update booking with email success info
-          await updateDoc(bookingRef, {
+          // Update booking with email success info - clean data only
+          const emailUpdateData = {
             emailStatus: "sent",
             emailSentAt: serverTimestamp(),
-            emailResults: emailResult.results || [],
             partialEmailSuccess: emailResult.partialSuccess || false,
-          });
+          };
+
+          await updateDoc(bookingRef, emailUpdateData);
         } else {
           throw new Error("EmailJS service not initialized");
         }
       } catch (emailError) {
-        console.error("Email sending failed:", emailError);
         setEmailSendingError(emailError.message);
 
-        // Update booking with email failure info
-        await updateDoc(bookingRef, {
+        // Update booking with email failure info - clean data only
+        const emailFailureData = {
           emailStatus: "failed",
           emailError: emailError.message,
           emailFailedAt: serverTimestamp(),
-        });
+        };
+
+        await updateDoc(bookingRef, emailFailureData);
       }
 
       // Generate receipt
@@ -558,7 +520,6 @@ const Payment = () => {
       setShowReceipt(true);
       setPaymentData((prev) => ({ ...prev, paymentCompleted: true }));
     } catch (error) {
-      console.error("Error processing payment:", error);
       alert(error.message || "Error processing payment. Please try again.");
     } finally {
       setLoading(false);
@@ -885,7 +846,7 @@ Contact us: support@zerofomo.com
                 </div>
                 <div className="summary-item total">
                   <span className="label">Total Amount:</span>
-                  <span className="value">₹{AMOUNT}</span>
+                  <span className="value">₹{AMOUNT.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -926,7 +887,7 @@ Contact us: support@zerofomo.com
                     </div>
                     <div className="amount-info">
                       <label>Amount:</label>
-                      <span className="amount">₹{AMOUNT}</span>
+                      <span className="amount">₹{AMOUNT.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>

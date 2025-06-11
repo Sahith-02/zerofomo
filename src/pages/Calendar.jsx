@@ -13,6 +13,7 @@ import {
   setDoc,
   deleteDoc,
   getDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { cleanupExpiredBookings } from "../config/bookingCleanupService";
 import Header from "../components/Header";
@@ -23,20 +24,25 @@ const Calendar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get duration from navigation state or default to 45 minutes
-  const duration = location.state?.duration || 45;
-  const serviceType = location.state?.serviceType || "Individual Service";
+  // Get state from navigation including price and additional schools
+  const {
+    duration = 45,
+    serviceType = "Individual Service",
+    price = 0,
+    additionalSchools = 0,
+  } = location.state || {};
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedSlots, setSelectedSlots] = useState([]);
   const [availableDates, setAvailableDates] = useState([]);
   const [bookedSlots, setBookedSlots] = useState({});
   const [blockedSlots, setBlockedSlots] = useState({});
-  const [dayBlockStatus, setDayBlockStatus] = useState({}); // Track which days are blocked
+  const [dayBlockStatus, setDayBlockStatus] = useState({});
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
-  const [blockType, setBlockType] = useState("slot"); // 'slot' or 'day'
+  const [blockType, setBlockType] = useState("slot");
   const [blockReason, setBlockReason] = useState("");
   const [zoomLink, setZoomLink] = useState("");
   const [isEditingZoomLink, setIsEditingZoomLink] = useState(false);
@@ -50,7 +56,6 @@ const Calendar = () => {
         const adminDoc = await getDoc(adminDocRef);
         setIsAdmin(adminDoc.exists());
 
-        // Fetch Zoom link if admin
         if (adminDoc.exists()) {
           const zoomLinkDoc = await getDoc(
             doc(db, "adminSettings", "zoomLink")
@@ -100,11 +105,15 @@ const Calendar = () => {
     }
   }, [selectedDate, duration]);
 
+  // Reset selected slots when date changes
+  useEffect(() => {
+    setSelectedSlots([]);
+  }, [selectedDate]);
+
   const fetchDayBlockStatus = async () => {
     try {
       const dayStatus = {};
 
-      // Check each date for blocks and bookings
       for (const date of availableDates) {
         const dateStr = date.toDateString();
 
@@ -141,8 +150,7 @@ const Calendar = () => {
         );
         const slotBlockedSnapshot = await getDocs(slotBlockedQuery);
 
-        // Count total available slots (48 slots for 24 hours with 30-min intervals)
-        const totalSlots = 48;
+        const totalSlots = 34;
         const bookedCount = bookedSnapshot.size;
         const blockedCount = slotBlockedSnapshot.size;
         const unavailableSlots = bookedCount + blockedCount;
@@ -166,18 +174,14 @@ const Calendar = () => {
   const fetchBookedSlots = async (date) => {
     try {
       setLoading(true);
-
-      // First, clean up expired pending bookings
       await cleanupExpiredBookings();
 
       const dateStr = date.toDateString();
-
-      // Query for booked slots on selected date with same duration
       const q = query(
         collection(db, "bookings"),
         where("date", "==", dateStr),
         where("duration", "==", duration),
-        where("status", "==", "confirmed") // Only confirmed bookings block the slot
+        where("status", "==", "confirmed")
       );
 
       const querySnapshot = await getDocs(q);
@@ -210,8 +214,7 @@ const Calendar = () => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.type === "day") {
-          // Block entire day
-          for (let hour = 0; hour < 24; hour++) {
+          for (let hour = 7; hour < 24; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
               const time = `${hour.toString().padStart(2, "0")}:${minute
                 .toString()
@@ -220,7 +223,6 @@ const Calendar = () => {
             }
           }
         } else {
-          // Block specific time slot
           blocked[data.time] = { reason: data.reason, type: "slot" };
         }
       });
@@ -231,11 +233,10 @@ const Calendar = () => {
     }
   };
 
-  // Generate time slots for 24 hours
   const generateTimeSlots = () => {
     const slots = [];
 
-    for (let hour = 0; hour < 24; hour++) {
+    for (let hour = 7; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
         const time = `${hour.toString().padStart(2, "0")}:${minute
           .toString()
@@ -244,6 +245,7 @@ const Calendar = () => {
 
         const isBlocked = blockedSlots[time];
         const isBooked = bookedSlots[time];
+        const isSelected = selectedSlots.includes(time);
 
         slots.push({
           value: time,
@@ -251,6 +253,7 @@ const Calendar = () => {
           disabled: isBooked || isBlocked,
           blocked: isBlocked,
           booked: isBooked,
+          selected: isSelected,
         });
       }
     }
@@ -290,16 +293,23 @@ const Calendar = () => {
   };
 
   const handleDateSelect = (date) => {
-    // Don't allow selection of blocked days unless in admin mode
     if (!adminMode && isDayBlocked(date)) {
       return;
     }
     setSelectedDate(date);
-    setSelectedTime(null); // Reset time selection when date changes
+    setSelectedTime(null);
   };
 
   const handleTimeSelect = (time) => {
-    if (adminMode) {
+    if (adminMode && blockType === "slot") {
+      setSelectedSlots((prev) => {
+        if (prev.includes(time)) {
+          return prev.filter((t) => t !== time);
+        } else {
+          return [...prev, time];
+        }
+      });
+    } else if (adminMode) {
       setSelectedTime(time);
     } else if (!blockedSlots[time] && !bookedSlots[time]) {
       setSelectedTime(time);
@@ -315,7 +325,6 @@ const Calendar = () => {
     try {
       setLoading(true);
 
-      // Create a pending booking (will be confirmed after payment)
       const bookingData = {
         userId: currentUser.uid,
         userEmail: currentUser.email,
@@ -324,14 +333,15 @@ const Calendar = () => {
         time: selectedTime,
         duration: duration,
         serviceType: serviceType,
-        status: "pending", // Will be updated to 'confirmed' after payment
+        price: price, // This is the price we'll pass through
+        additionalSchools: additionalSchools,
+        status: "pending",
         createdAt: serverTimestamp(),
-        expiresAt: new Date(Date.now() + 20 * 60 * 1000), // 20 minutes expiry for pending bookings
+        expiresAt: new Date(Date.now() + 20 * 60 * 1000),
       };
 
       const docRef = await addDoc(collection(db, "bookings"), bookingData);
 
-      // Navigate to user details page with booking info
       navigate("/booking-details", {
         state: {
           bookingId: docRef.id,
@@ -339,9 +349,11 @@ const Calendar = () => {
           time: selectedTime,
           duration: duration,
           serviceType: serviceType,
+          price: price, // Passing price to booking details
+          additionalSchools: additionalSchools,
           displayTime: formatTime(selectedTime),
           displayDate: formatDate(selectedDate),
-          zoomLink: zoomLink, // Pass the zoom link to booking details
+          zoomLink: zoomLink,
         },
       });
     } catch (error) {
@@ -360,38 +372,51 @@ const Calendar = () => {
 
     try {
       setLoading(true);
-
       const dateStr = selectedDate.toDateString();
-      const blockData = {
-        date: dateStr,
-        reason: blockReason,
-        blockedBy: currentUser.uid,
-        blockedAt: serverTimestamp(),
-      };
 
       if (blockType === "day") {
-        // Block entire day
-        blockData.type = "day";
+        const blockData = {
+          date: dateStr,
+          reason: blockReason,
+          type: "day",
+          blockedBy: currentUser.uid,
+          blockedAt: serverTimestamp(),
+        };
+
         await setDoc(doc(db, "blockedSlots", `day-${dateStr}`), blockData);
       } else {
-        // Block specific time slot
-        if (!selectedTime) {
-          alert("Please select a time slot to block");
+        const slotsToBlock =
+          selectedSlots.length > 0 ? selectedSlots : [selectedTime];
+
+        if (slotsToBlock.length === 0) {
+          alert("Please select at least one time slot to block");
           return;
         }
-        blockData.type = "slot";
-        blockData.time = selectedTime;
-        await setDoc(
-          doc(db, "blockedSlots", `slot-${dateStr}-${selectedTime}`),
-          blockData
-        );
+
+        const batch = writeBatch(db);
+
+        slotsToBlock.forEach((time) => {
+          const blockData = {
+            date: dateStr,
+            reason: blockReason,
+            type: "slot",
+            time: time,
+            blockedBy: currentUser.uid,
+            blockedAt: serverTimestamp(),
+          };
+
+          const docRef = doc(db, "blockedSlots", `slot-${dateStr}-${time}`);
+          batch.set(docRef, blockData);
+        });
+
+        await batch.commit();
       }
 
-      // Refresh the slots and day status
       await fetchBlockedSlots(selectedDate);
       await fetchDayBlockStatus();
       setBlockReason("");
-      alert("Slot blocked successfully");
+      setSelectedSlots([]);
+      alert("Slot(s) blocked successfully");
     } catch (error) {
       console.error("Error blocking slot:", error);
       alert("Error blocking slot. Please try again.");
@@ -406,12 +431,9 @@ const Calendar = () => {
     try {
       setLoading(true);
       const dateStr = selectedDate.toDateString();
-
-      // Check if it's a day block or slot block
       const isDayBlock = blockedSlots[time]?.type === "day";
 
       if (isDayBlock) {
-        // Delete all blocks for this day
         const q = query(
           collection(db, "blockedSlots"),
           where("date", "==", dateStr),
@@ -423,11 +445,9 @@ const Calendar = () => {
           await deleteDoc(doc.ref);
         });
       } else {
-        // Delete specific time slot block
         await deleteDoc(doc(db, "blockedSlots", `slot-${dateStr}-${time}`));
       }
 
-      // Refresh the slots and day status
       await fetchBlockedSlots(selectedDate);
       await fetchDayBlockStatus();
       alert("Slot unblocked successfully");
@@ -468,7 +488,7 @@ const Calendar = () => {
   };
 
   if (!currentUser) {
-    return null; // Will redirect to login
+    return null;
   }
 
   const timeSlots = generateTimeSlots();
@@ -483,6 +503,9 @@ const Calendar = () => {
           <div className="cal-booking-info">
             <span className="cal-service-type">{serviceType}</span>
             <span className="cal-duration">{duration} minutes</span>
+            {price > 0 && (
+              <span className="cal-duration">₹{price.toLocaleString()}</span>
+            )}
           </div>
 
           {isAdmin && (
@@ -562,7 +585,6 @@ const Calendar = () => {
         </div>
 
         <div className="cal-booking-steps">
-          {/* Step 1: Date Selection */}
           <div className="cal-step-section">
             <h2 className="cal-step-title">Select Date</h2>
             <div className="cal-dates-grid">
@@ -605,7 +627,6 @@ const Calendar = () => {
             </div>
           </div>
 
-          {/* Step 2: Time Selection */}
           {selectedDate && (
             <div className="cal-step-section">
               <h2 className="cal-step-title">
@@ -652,13 +673,25 @@ const Calendar = () => {
                     />
                   </div>
 
+                  {blockType === "slot" && selectedSlots.length > 0 && (
+                    <div className="cal-selected-slots-info">
+                      Selected slots: {selectedSlots.length}
+                    </div>
+                  )}
+
                   <div className="cal-block-actions">
                     <button
                       className="cal-block-btn"
                       onClick={handleBlockSlot}
-                      disabled={loading || !blockReason}
+                      disabled={
+                        loading ||
+                        !blockReason ||
+                        (blockType === "slot" &&
+                          selectedSlots.length === 0 &&
+                          !selectedTime)
+                      }
                     >
-                      {loading ? "Processing..." : "Block Slot"}
+                      {loading ? "Processing..." : "Block Slot(s)"}
                     </button>
                   </div>
                 </div>
@@ -669,7 +702,9 @@ const Calendar = () => {
                   <button
                     key={index}
                     className={`cal-time-slot ${
-                      selectedTime === slot.value ? "cal-selected" : ""
+                      selectedTime === slot.value || slot.selected
+                        ? "cal-selected"
+                        : ""
                     } ${slot.disabled ? "cal-disabled" : ""} ${
                       slot.blocked ? "cal-blocked" : ""
                     }`}
@@ -702,7 +737,6 @@ const Calendar = () => {
             </div>
           )}
 
-          {/* Next Button */}
           {!adminMode && selectedDate && selectedTime && (
             <div className="cal-next-section">
               <div className="cal-selection-summary">
@@ -719,6 +753,11 @@ const Calendar = () => {
                 <p>
                   <strong>Service:</strong> {serviceType}
                 </p>
+                {price > 0 && (
+                  <p>
+                    <strong>Price:</strong> ₹{price.toLocaleString()}
+                  </p>
+                )}
               </div>
 
               <button
