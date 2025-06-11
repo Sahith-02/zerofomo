@@ -111,7 +111,7 @@ const PolicyPopup = () => {
 
           <h3>9. CONTACT</h3>
           <p>
-            <strong>Email:</strong> support@zerofomo.com
+            <strong>Email:</strong> contact@zerofomo.com
           </p>
         </div>
       ),
@@ -205,7 +205,7 @@ const PolicyPopup = () => {
 
           <h3>6. CONTACT US</h3>
           <p>
-            <strong>Email:</strong> support@zerofomo.com
+            <strong>Email:</strong> contact@zerofomo.com
           </p>
         </div>
       ),
@@ -275,7 +275,7 @@ const PolicyPopup = () => {
             contact us at:
           </p>
           <p>
-            <strong>Email:</strong> support@zerofomo.com
+            <strong>Email:</strong> contact@zerofomo.com
           </p>
 
           <p>
