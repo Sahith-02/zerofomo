@@ -14,6 +14,8 @@ import BookingDetails from "./pages/BookingDetails";
 import Payment from "./pages/Payment";
 import Testimonials from "./components/Testimonials";
 import Founder from "./pages/Founder";
+import Webinars from "./pages/Webinars";
+import ContactUs from "./pages/ContactUs";
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
           <Route path="/payment" element={<Payment />} />
           <Route path="/success-stories" element={<Testimonials />} />
           <Route path="/founder" element={<Founder />} />
+          <Route path="/webinar" element={<Webinars />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Routes>
       </Router>
     </AuthProvider>

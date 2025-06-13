@@ -149,7 +149,7 @@ const Header = () => {
               )}
             </div>
 
-            <Link to="/webinars" className="zf-nav-link">
+            <Link to="/webinar" className="zf-nav-link">
               Webinars
             </Link>
             <Link to="/contact" className="zf-nav-link">

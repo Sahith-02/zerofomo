@@ -349,11 +349,12 @@ const Calendar = () => {
           time: selectedTime,
           duration: duration,
           serviceType: serviceType,
-          price: price, // Passing price to booking details
+          price: price,
           additionalSchools: additionalSchools,
           displayTime: formatTime(selectedTime),
           displayDate: formatDate(selectedDate),
           zoomLink: zoomLink,
+          isParent: location.state?.isParent || false, // Add this line
         },
       });
     } catch (error) {

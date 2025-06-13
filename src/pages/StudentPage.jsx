@@ -1,12 +1,14 @@
+// StudentPage.jsx
 import React, { useState } from "react";
 import "../styles/Categories.css";
 import Header from "../components/Header";
 import ServicePackageModal from "./ServicePackageModal";
-
+import { useNavigate } from "react-router-dom";
 
 const StudentPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState("");
+  const navigate = useNavigate();
 
   const journeyOptions = [
     {
@@ -45,10 +47,20 @@ const StudentPage = () => {
     setSelectedPackage("");
   };
 
+  const handleDirectBooking = (price) => {
+    navigate("/calendar", {
+      state: {
+        isParent: false,
+        price: price,
+        serviceType: "Student Consultation",
+        duration: 45,
+      },
+    });
+  };
+
   return (
     <div className="student-page-container">
       <Header />
-      {/* Background div instead of img for more control */}
       <div
         className="student-background"
         style={{
@@ -103,13 +115,12 @@ const StudentPage = () => {
         </div>
       </div>
 
-      {/* Service Package Modal */}
       <ServicePackageModal
         isOpen={modalOpen}
         onClose={closeModal}
         packageType={selectedPackage}
+        onBookNow={handleDirectBooking}
       />
-    
     </div>
   );
 };
