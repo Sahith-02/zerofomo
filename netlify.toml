@@ -1,67 +1,58 @@
 [build]
-  # Your build settings
-  publish = "dist"  # or your build output directory
-  command = "npm run build"  # or your build command
+  publish = "dist"
+  command = "npm run build"
 
-# Image optimization and caching
+# Aggressive image caching and optimization
 [[headers]]
-  for = "/assets/images/*"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
+
+[[headers]]
+  for = "*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
 
 [[headers]]
   for = "*.webp"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
 
-[[headers]]
-  for = "*.avif"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# CSS and JS caching
-[[headers]]
-  for = "*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Enable Brotli compression
+# Enable compression for all assets
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
 
-# Preload critical resources
+# Preload critical images (update these paths to your most important images)
 [[headers]]
   for = "/"
   [headers.values]
     Link = '''
-    </assets/critical.css>; rel=preload; as=style,
-    </assets/hero-image.webp>; rel=preload; as=image
+    </assets/banner.jpg>; rel=preload; as=image; crossorigin,
+    </assets/logo.png>; rel=preload; as=image; crossorigin,
+    </assets/banner__1.png>; rel=preload; as=image; crossorigin
     '''
 
-# Enable server push for critical resources (HTTP/2)
-[[headers]]
-  for = "/"
-  [headers.values]
-    Link = '''
-    </assets/critical.css>; rel=preload; as=style; crossorigin,
-    </assets/main.js>; rel=preload; as=script; crossorigin
-    '''
-
-# Redirect rules (if needed)
-[[redirects]]
-  from = "/old-path/*"
-  to = "/new-path/:splat"
-  status = 301
-
-# Form handling (if you have forms)
+# Enable processing optimizations
 [build.processing]
   skip_processing = false
 
@@ -76,5 +67,17 @@
 [build.processing.html]
   pretty_urls = true
 
+[build.processing.images]
+  compress = true
+
+# Enable edge handlers for faster delivery
+[build.environment]
+  NODE_ENV = "production"
+
+# Netlify Large Media (for automatic image optimization)
+[[plugins]]
+  package = "@netlify/plugin-gatsby"
+
+# Enable automatic image transformations
 [build.processing.images]
   compress = true
