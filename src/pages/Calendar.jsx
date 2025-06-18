@@ -14,6 +14,7 @@ import {
   deleteDoc,
   getDoc,
   writeBatch,
+  Timestamp,
 } from "firebase/firestore";
 import { cleanupExpiredBookings } from "../config/bookingCleanupService";
 import Header from "../components/Header";
@@ -47,6 +48,7 @@ const Calendar = () => {
   const [zoomLink, setZoomLink] = useState("");
   const [isEditingZoomLink, setIsEditingZoomLink] = useState(false);
   const [tempZoomLink, setTempZoomLink] = useState("");
+  const [tempReservedSlots, setTempReservedSlots] = useState({});
 
   // Check if user is admin
   useEffect(() => {
@@ -175,28 +177,84 @@ const Calendar = () => {
     try {
       setLoading(true);
       await cleanupExpiredBookings();
+      await cleanupExpiredReservations(); // Add this line
 
       const dateStr = date.toDateString();
-      const q = query(
+
+      // Fetch confirmed bookings
+      const confirmedQuery = query(
         collection(db, "bookings"),
         where("date", "==", dateStr),
         where("duration", "==", duration),
         where("status", "==", "confirmed")
       );
 
-      const querySnapshot = await getDocs(q);
-      const booked = {};
+      // Fetch temporary reservations
+      const tempQuery = query(
+        collection(db, "tempReservations"),
+        where("date", "==", dateStr),
+        where("duration", "==", duration)
+      );
 
-      querySnapshot.forEach((doc) => {
+      const [confirmedSnapshot, tempSnapshot] = await Promise.all([
+        getDocs(confirmedQuery),
+        getDocs(tempQuery),
+      ]);
+
+      const booked = {};
+      const tempReserved = {};
+
+      // Process confirmed bookings
+      confirmedSnapshot.forEach((doc) => {
         const data = doc.data();
         booked[data.time] = true;
       });
 
+      // Process temporary reservations
+      tempSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const expiresAt = data.expiresAt?.toDate();
+
+        if (expiresAt && expiresAt > new Date()) {
+          // Still valid reservation
+          tempReserved[data.time] = {
+            userId: data.userId,
+            expiresAt: expiresAt,
+            isOwn: data.userId === currentUser?.uid,
+          };
+        }
+      });
+
       setBookedSlots(booked);
+      setTempReservedSlots(tempReserved);
     } catch (error) {
       console.error("Error fetching booked slots:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const cleanupExpiredReservations = async () => {
+    try {
+      const now = new Date();
+      const expiredQuery = query(
+        collection(db, "tempReservations"),
+        where("expiresAt", "<=", Timestamp.fromDate(now))
+      );
+
+      const expiredSnapshot = await getDocs(expiredQuery);
+      const batch = writeBatch(db);
+
+      expiredSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      if (!expiredSnapshot.empty) {
+        await batch.commit();
+        console.log(`Cleaned up ${expiredSnapshot.size} expired reservations`);
+      }
+    } catch (error) {
+      console.error("Error cleaning up expired reservations:", error);
     }
   };
 
@@ -245,20 +303,73 @@ const Calendar = () => {
 
         const isBlocked = blockedSlots[time];
         const isBooked = bookedSlots[time];
+        const tempReservation = tempReservedSlots[time];
         const isSelected = selectedSlots.includes(time);
+
+        // Determine if slot is disabled
+        let disabled = isBooked || isBlocked;
+        let slotStatus = "available";
+        let statusText = "";
+
+        if (isBooked) {
+          slotStatus = "booked";
+          statusText = "Booked";
+          disabled = true;
+        } else if (isBlocked) {
+          slotStatus = "blocked";
+          statusText = isBlocked.reason || "Blocked";
+          disabled = true;
+        } else if (tempReservation && !tempReservation.isOwn) {
+          slotStatus = "temp-reserved";
+          statusText = "Reserved";
+          disabled = true;
+        } else if (tempReservation && tempReservation.isOwn) {
+          slotStatus = "own-reservation";
+          statusText = "Your Reservation";
+          disabled = false; // Allow user to select their own reserved slot
+        }
 
         slots.push({
           value: time,
           display: displayTime,
-          disabled: isBooked || isBlocked,
+          disabled: disabled,
           blocked: isBlocked,
           booked: isBooked,
+          tempReserved: tempReservation,
           selected: isSelected,
+          slotStatus: slotStatus,
+          statusText: statusText,
         });
       }
     }
 
     return slots;
+  };
+
+  const createTempReservation = async (date, time) => {
+    try {
+      const dateStr = date.toDateString();
+      const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
+
+      const reservationData = {
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        date: dateStr,
+        time: time,
+        duration: duration,
+        expiresAt: Timestamp.fromDate(expiresAt),
+        createdAt: serverTimestamp(),
+      };
+
+      // Use a unique document ID to prevent conflicts
+      const docId = `${currentUser.uid}-${dateStr}-${time}`;
+      await setDoc(doc(db, "tempReservations", docId), reservationData);
+
+      return docId;
+    } catch (error) {
+      console.error("Error creating temporary reservation:", error);
+      throw error;
+    }
   };
 
   const formatTime = (time) => {
@@ -325,6 +436,26 @@ const Calendar = () => {
     try {
       setLoading(true);
 
+      // Check if slot is still available
+      await fetchBookedSlots(selectedDate);
+
+      if (
+        bookedSlots[selectedTime] ||
+        (tempReservedSlots[selectedTime] &&
+          !tempReservedSlots[selectedTime].isOwn)
+      ) {
+        alert(
+          "Sorry, this slot is no longer available. Please select another time."
+        );
+        return;
+      }
+
+      // Create temporary reservation
+      const reservationId = await createTempReservation(
+        selectedDate,
+        selectedTime
+      );
+
       const bookingData = {
         userId: currentUser.uid,
         userEmail: currentUser.email,
@@ -333,11 +464,12 @@ const Calendar = () => {
         time: selectedTime,
         duration: duration,
         serviceType: serviceType,
-        price: price, // This is the price we'll pass through
+        price: price,
         additionalSchools: additionalSchools,
         status: "pending",
         createdAt: serverTimestamp(),
-        expiresAt: new Date(Date.now() + 20 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+        tempReservationId: reservationId, // Link to temp reservation
       };
 
       const docRef = await addDoc(collection(db, "bookings"), bookingData);
@@ -354,7 +486,8 @@ const Calendar = () => {
           displayTime: formatTime(selectedTime),
           displayDate: formatDate(selectedDate),
           zoomLink: zoomLink,
-          isParent: location.state?.isParent || false, // Add this line
+          isParent: location.state?.isParent || false,
+          tempReservationId: reservationId, // Pass reservation ID
         },
       });
     } catch (error) {

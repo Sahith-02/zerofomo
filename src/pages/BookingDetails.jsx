@@ -1,9 +1,8 @@
-// BookingDetails.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../config/firebase";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, deleteDoc } from "firebase/firestore";
 import Header from "../components/Header";
 import "../styles/BookingDetails.css";
 
@@ -45,6 +44,8 @@ const BookingDetails = () => {
 
   const [loading, setLoading] = useState(false);
   const [bookingData, setBookingData] = useState(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const paymentSectionRef = useRef(null);
 
   useEffect(() => {
     if (!currentUser) {
@@ -122,6 +123,188 @@ const BookingDetails = () => {
     fetchBookingData();
   }, [currentUser, bookingInfo, navigate, isParent]);
 
+  useEffect(() => {
+    if (showPayment && bookingInfo?.price) {
+      // Load Razorpay script dynamically
+      const loadRazorpay = () => {
+        return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = () => {
+            resolve(true);
+          };
+          script.onerror = () => {
+            resolve(false);
+          };
+          document.body.appendChild(script);
+        });
+      };
+
+      const initializePayment = async () => {
+        const isRazorpayLoaded = await loadRazorpay();
+
+        if (!isRazorpayLoaded) {
+          alert(
+            "Razorpay SDK failed to load. Please check your internet connection."
+          );
+          return;
+        }
+
+        // Create Razorpay payment options with dynamic pricing
+        const options = {
+          key: "rzp_live_p9Qf75BkcPhYdh", // Your Razorpay key
+          amount: bookingInfo.price * 100, // Convert to paise (Razorpay expects amount in paise)
+          currency: "INR",
+          name: "ZeroFOMO",
+          description: `${bookingInfo.serviceType} - ${bookingInfo.displayDate} at ${bookingInfo.displayTime}`,
+          image: "/assets/logo.png", // Optional: Add your logo
+          handler: function (response) {
+            // Handle successful payment
+            console.log("Payment successful:", response);
+            alert(
+              `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+            );
+
+            // Update booking status in Firebase
+            updateBookingPaymentStatus(response.razorpay_payment_id);
+          },
+          prefill: {
+            name: formData.fullName,
+            email: formData.emailId,
+            contact: formData.phoneNumber,
+          },
+          theme: {
+            color: "#3399cc",
+          },
+          modal: {
+            ondismiss: function () {
+              console.log("Payment modal closed");
+            },
+          },
+        };
+
+        // Create Razorpay checkout instance
+        const rzp = new window.Razorpay(options);
+
+        // Add payment button
+        const paymentContainer = document.getElementById("razorpay-form");
+        if (paymentContainer) {
+          paymentContainer.innerHTML = `
+            <button 
+              type="button" 
+              class="razorpay-payment-button"
+              id="pay-button"
+            >
+              Pay ₹${bookingInfo.price.toLocaleString()}
+            </button>
+          `;
+
+          // Add click event listener to the payment button
+          const payButton = document.getElementById("pay-button");
+          if (payButton) {
+            payButton.addEventListener("click", () => {
+              rzp.open();
+            });
+          }
+        }
+      };
+
+      initializePayment();
+    }
+  }, [showPayment, bookingInfo, formData]);
+
+  // Function to update booking payment status
+  const updateBookingPaymentStatus = async (paymentId) => {
+    try {
+      const bookingRef = doc(db, "bookings", bookingInfo.bookingId);
+
+      // Update booking to confirmed status
+      await updateDoc(bookingRef, {
+        paymentCompleted: true,
+        paymentId: paymentId,
+        paymentDate: new Date(),
+        status: "confirmed", // Change from "pending" to "confirmed"
+      });
+
+      // Remove temporary reservation since payment is completed
+      if (bookingInfo.tempReservationId) {
+        try {
+          await deleteDoc(
+            doc(db, "tempReservations", bookingInfo.tempReservationId)
+          );
+          console.log("Temporary reservation removed after payment");
+        } catch (error) {
+          console.error("Error removing temporary reservation:", error);
+          // Don't fail the whole process if temp reservation deletion fails
+        }
+      }
+
+      // Redirect to success page
+      navigate("/booking-success", {
+        state: {
+          bookingId: bookingInfo.bookingId,
+          paymentId: paymentId,
+          bookingDetails: {
+            date: bookingInfo.displayDate,
+            time: bookingInfo.displayTime,
+            service: bookingInfo.serviceType,
+            duration: bookingInfo.duration,
+            price: bookingInfo.price,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      alert(
+        "Payment successful but there was an error updating the booking status. Please contact support."
+      );
+    }
+  };
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // This will be handled by the automatic cleanup service
+      // but we can add immediate cleanup here if needed
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  const handleCancelBooking = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to cancel this booking? Your time slot will be released."
+      )
+    ) {
+      try {
+        setLoading(true);
+
+        // Delete the booking
+        const bookingRef = doc(db, "bookings", bookingInfo.bookingId);
+        await deleteDoc(bookingRef);
+
+        // Delete the temporary reservation
+        if (bookingInfo.tempReservationId) {
+          await deleteDoc(
+            doc(db, "tempReservations", bookingInfo.tempReservationId)
+          );
+        }
+
+        alert("Booking cancelled successfully.");
+        navigate("/");
+      } catch (error) {
+        console.error("Error cancelling booking:", error);
+        alert("Error cancelling booking. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -177,34 +360,39 @@ const BookingDetails = () => {
       return;
     }
 
-    if (!bookingData || bookingData.userId !== currentUser.uid) {
-      alert("Permission denied. You can only edit your own bookings.");
-      return;
-    }
-
     try {
       setLoading(true);
 
+      // Save booking details
       const bookingRef = doc(db, "bookings", bookingInfo.bookingId);
       const updateData = {
         ...formData,
         detailsCompleted: true,
         isParent: isParent,
         updatedAt: new Date(),
+        // Store the price in the booking document
+        price: bookingInfo.price,
+        serviceType: bookingInfo.serviceType,
+        appointmentDate: bookingInfo.displayDate,
+        appointmentTime: bookingInfo.displayTime,
+        duration: bookingInfo.duration,
       };
-
       await updateDoc(bookingRef, updateData);
 
-      navigate("/payment", {
-        state: {
-          ...bookingInfo,
-          userDetails: formData,
-          price: bookingInfo.price,
-          isParent: isParent,
-        },
-      });
+      // Show payment section
+      setShowPayment(true);
+
+      // Scroll after the component updates and renders the payment section
+      setTimeout(() => {
+        if (paymentSectionRef.current) {
+          paymentSectionRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }, 100);
     } catch (error) {
-      console.error("Error updating booking details:", error);
+      console.error("Error updating booking:", error);
       alert("Error saving details. Please try again.");
     } finally {
       setLoading(false);
@@ -575,6 +763,14 @@ const BookingDetails = () => {
             <div className="form-actions">
               <button
                 type="button"
+                className="cancel-btn"
+                onClick={handleCancelBooking}
+                disabled={loading}
+              >
+                Cancel Booking
+              </button>
+              <button
+                type="button"
                 className="back-btn"
                 onClick={() => navigate("/calendar")}
               >
@@ -590,10 +786,37 @@ const BookingDetails = () => {
                   bookingData.userId !== currentUser.uid
                 }
               >
-                {loading ? "Saving..." : "Proceed to Payment"}
+                {loading ? "Processing..." : "Complete Booking & Pay"}
               </button>
             </div>
           </form>
+
+          {showPayment && (
+            <div
+              id="payment-section"
+              className="payment-section"
+              ref={paymentSectionRef}
+            >
+              <h3>Complete Your Payment</h3>
+              <div className="payment-info">
+                <p>
+                  <strong>Amount to Pay:</strong> ₹
+                  {bookingInfo.price.toLocaleString()}
+                </p>
+                <p>
+                  <strong>Service:</strong> {bookingInfo.serviceType}
+                </p>
+                <p>
+                  <strong>Date & Time:</strong> {bookingInfo.displayDate} at{" "}
+                  {bookingInfo.displayTime}
+                </p>
+              </div>
+              <div className="payment-container">
+                <form id="razorpay-form"></form>
+              </div>
+              <p className="secure-text">Secured by Razorpay</p>
+            </div>
+          )}
         </div>
 
         <div className="booking-note">

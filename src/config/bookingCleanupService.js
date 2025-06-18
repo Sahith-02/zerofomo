@@ -1,138 +1,176 @@
-// bookingCleanupService.js
-import { db } from "../config/firebase";
+// Update your bookingCleanupService.js file with this enhanced version
+
+import { db } from "./firebase";
 import {
   collection,
   query,
   where,
   getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-  or,
-  getDoc,
+  writeBatch,
+  Timestamp,
 } from "firebase/firestore";
 
-/**
- * Clean up expired pending bookings
- * This function removes bookings that are in 'pending' or 'details_complete' status and have expired
- */
 export const cleanupExpiredBookings = async () => {
   try {
     const now = new Date();
+    const batch = writeBatch(db);
+    let deleteCount = 0;
 
-    // Query for expired bookings that are either pending or details_complete
-    const q = query(
+    // Clean up expired pending bookings
+    const expiredBookingsQuery = query(
       collection(db, "bookings"),
-      or(
-        where("status", "==", "pending"),
-        where("status", "==", "details_complete")
-      ),
+      where("status", "==", "pending"),
       where("expiresAt", "<=", now)
     );
 
-    const querySnapshot = await getDocs(q);
+    const expiredBookingsSnapshot = await getDocs(expiredBookingsQuery);
 
-    // Delete expired bookings
-    const deletePromises = [];
-    querySnapshot.forEach((docSnapshot) => {
-      deletePromises.push(deleteDoc(doc(db, "bookings", docSnapshot.id)));
+    expiredBookingsSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+      deleteCount++;
     });
 
-    await Promise.all(deletePromises);
+    // Clean up expired temporary reservations
+    const expiredReservationsQuery = query(
+      collection(db, "tempReservations"),
+      where("expiresAt", "<=", Timestamp.fromDate(now))
+    );
 
-    console.log(`Cleaned up ${deletePromises.length} expired bookings`);
+    const expiredReservationsSnapshot = await getDocs(expiredReservationsQuery);
 
-    return deletePromises.length;
+    expiredReservationsSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+      deleteCount++;
+    });
+
+    // Execute batch delete
+    if (deleteCount > 0) {
+      await batch.commit();
+      console.log(
+        `Cleaned up ${deleteCount} expired bookings and reservations`
+      );
+    }
+
+    return deleteCount;
   } catch (error) {
     console.error("Error cleaning up expired bookings:", error);
-    throw error;
+    return 0;
   }
 };
 
-/**
- * Confirm a booking after successful payment
- * @param {string} bookingId - The ID of the booking to confirm
- */
-export const confirmBooking = async (bookingId) => {
+// Function to specifically clean up reservations for a user
+export const cleanupUserReservations = async (userId) => {
   try {
-    const bookingRef = doc(db, "bookings", bookingId);
+    const userReservationsQuery = query(
+      collection(db, "tempReservations"),
+      where("userId", "==", userId)
+    );
 
-    await updateDoc(bookingRef, {
-      status: "confirmed",
-      confirmedAt: new Date(),
-      expiresAt: null, // Remove expiry as it's now confirmed
-      updatedAt: new Date(),
+    const snapshot = await getDocs(userReservationsQuery);
+    const batch = writeBatch(db);
+
+    snapshot.forEach((doc) => {
+      batch.delete(doc.ref);
     });
 
-    console.log(`Booking ${bookingId} confirmed successfully`);
-  } catch (error) {
-    console.error("Error confirming booking:", error);
-    throw error;
-  }
-};
-
-/**
- * Cancel a booking
- * @param {string} bookingId - The ID of the booking to cancel
- * @param {string} reason - Reason for cancellation
- */
-export const cancelBooking = async (bookingId, reason = "User cancelled") => {
-  try {
-    const bookingRef = doc(db, "bookings", bookingId);
-
-    await updateDoc(bookingRef, {
-      status: "cancelled",
-      cancelledAt: new Date(),
-      cancellationReason: reason,
-      updatedAt: new Date(),
-    });
-
-    console.log(`Booking ${bookingId} cancelled successfully`);
-  } catch (error) {
-    console.error("Error cancelling booking:", error);
-    throw error;
-  }
-};
-
-/**
- * Update booking details and mark as details complete
- * @param {string} bookingId - The ID of the booking to update
- * @param {object} details - The booking details to update
- */
-export const updateBookingDetails = async (bookingId, details) => {
-  try {
-    const bookingRef = doc(db, "bookings", bookingId);
-
-    await updateDoc(bookingRef, {
-      ...details,
-      status: "details_complete",
-      detailsCompleted: true,
-      updatedAt: new Date(),
-    });
-
-    console.log(`Booking ${bookingId} details updated successfully`);
-  } catch (error) {
-    console.error("Error updating booking details:", error);
-    throw error;
-  }
-};
-
-/**
- * Get booking by ID
- * @param {string} bookingId - The ID of the booking to retrieve
- */
-export const getBookingById = async (bookingId) => {
-  try {
-    const bookingRef = doc(db, "bookings", bookingId);
-    const bookingSnap = await getDoc(bookingRef);
-
-    if (bookingSnap.exists()) {
-      return { id: bookingSnap.id, ...bookingSnap.data() };
-    } else {
-      throw new Error("Booking not found");
+    if (!snapshot.empty) {
+      await batch.commit();
+      console.log(
+        `Cleaned up ${snapshot.size} reservations for user ${userId}`
+      );
     }
+
+    return snapshot.size;
   } catch (error) {
-    console.error("Error getting booking:", error);
-    throw error;
+    console.error("Error cleaning up user reservations:", error);
+    return 0;
+  }
+};
+
+// Function to check if a slot is available (considering both bookings and reservations)
+export const isSlotAvailable = async (
+  date,
+  time,
+  duration,
+  currentUserId = null
+) => {
+  try {
+    const dateStr = typeof date === "string" ? date : date.toDateString();
+
+    // Check confirmed bookings
+    const bookingsQuery = query(
+      collection(db, "bookings"),
+      where("date", "==", dateStr),
+      where("time", "==", time),
+      where("duration", "==", duration),
+      where("status", "==", "confirmed")
+    );
+
+    const bookingsSnapshot = await getDocs(bookingsQuery);
+    if (!bookingsSnapshot.empty) {
+      return false; // Slot is booked
+    }
+
+    // Check temporary reservations
+    const reservationsQuery = query(
+      collection(db, "tempReservations"),
+      where("date", "==", dateStr),
+      where("time", "==", time),
+      where("duration", "==", duration)
+    );
+
+    const reservationsSnapshot = await getDocs(reservationsQuery);
+
+    for (const doc of reservationsSnapshot.docs) {
+      const data = doc.data();
+      const expiresAt = data.expiresAt?.toDate();
+
+      // If reservation is still valid
+      if (expiresAt && expiresAt > new Date()) {
+        // If it's not the current user's reservation, slot is not available
+        if (data.userId !== currentUserId) {
+          return false;
+        }
+      }
+    }
+
+    return true; // Slot is available
+  } catch (error) {
+    console.error("Error checking slot availability:", error);
+    return false; // Assume not available on error
+  }
+};
+
+// Auto cleanup service that runs periodically
+export const startAutoCleanup = () => {
+  // Run cleanup every 5 minutes
+  const interval = setInterval(async () => {
+    await cleanupExpiredBookings();
+  }, 5 * 60 * 1000);
+
+  // Return cleanup function
+  return () => clearInterval(interval);
+};
+
+// Initialize auto cleanup when the app starts
+let cleanupInterval = null;
+
+export const initializeCleanupService = () => {
+  if (!cleanupInterval) {
+    // Run initial cleanup
+    cleanupExpiredBookings();
+
+    // Start periodic cleanup
+    cleanupInterval = startAutoCleanup();
+
+    console.log("Booking cleanup service initialized");
+  }
+};
+
+export const stopCleanupService = () => {
+  if (cleanupInterval) {
+    cleanupInterval();
+    cleanupInterval = null;
+    console.log("Booking cleanup service stopped");
   }
 };

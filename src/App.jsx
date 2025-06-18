@@ -16,8 +16,22 @@ import Testimonials from "./components/Testimonials";
 import Founder from "./pages/Founder";
 import Webinars from "./pages/Webinars";
 import ContactUs from "./pages/ContactUs";
+import {
+  initializeCleanupService,
+  stopCleanupService,
+} from "./config/bookingCleanupService";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    // Initialize the cleanup service when app starts
+    initializeCleanupService();
+
+    // Cleanup when app unmounts
+    return () => {
+      stopCleanupService();
+    };
+  }, []);
   return (
     <AuthProvider>
       <Router>

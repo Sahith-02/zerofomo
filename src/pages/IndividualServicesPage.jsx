@@ -59,9 +59,9 @@ const IndividualServicesPage = () => {
                 </div>
                 <button
                   className="compact-price-btn"
-                  onClick={() => handleBookCall("Resume Service", 500)}
+                  onClick={() => handleBookCall("Resume Service", 1999)}
                 >
-                  ₹500
+                  ₹1999
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -113,9 +113,9 @@ const IndividualServicesPage = () => {
                 </div>
                 <button
                   className="compact-price-btn"
-                  onClick={() => handleBookCall("LOR Service", 500)}
+                  onClick={() => handleBookCall("LOR Service", 1499)}
                 >
-                  ₹500
+                  ₹1499
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -167,9 +167,9 @@ const IndividualServicesPage = () => {
                 </div>
                 <button
                   className="compact-price-btn"
-                  onClick={() => handleBookCall("Essays / SOP Service", 500)}
+                  onClick={() => handleBookCall("Essays / SOP Service", 3499)}
                 >
-                  ₹500
+                  ₹3499
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -221,9 +221,9 @@ const IndividualServicesPage = () => {
                 </div>
                 <button
                   className="compact-price-btn"
-                  onClick={() => handleBookCall("Interview Service", 500)}
+                  onClick={() => handleBookCall("Interview Service", 1499)}
                 >
-                  ₹500
+                  ₹1499
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"

@@ -685,8 +685,68 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .cal-zoom-link-edit-btn {
     width: 100%;
   }
+}
+
+/* Add these styles to your Calendar.css file */
+
+/* Temporarily reserved slots (by other users) */
+.cal-time-slot.cal-temp-reserved {
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
+  cursor: not-allowed;
+}
+
+.cal-time-slot.cal-temp-reserved:hover {
+  background-color: #fef3c7;
+  transform: none;
+}
+
+/* User's own temporary reservation */
+.cal-time-slot.cal-own-reservation {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+  color: #1e40af;
+  border-width: 2px;
+}
+
+.cal-time-slot.cal-own-reservation:hover {
+  background-color: #bfdbfe;
+}
+
+/* Status labels */
+.cal-temp-reserved-label {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f59e0b;
+  color: white;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.cal-own-reservation-label {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #3b82f6;
+  color: white;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+/* Update existing time slot styles to accommodate new labels */
+.cal-time-slot {
+  position: relative;
+  padding-bottom: 20px; /* Make room for status labels */
 }

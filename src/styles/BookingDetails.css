@@ -374,3 +374,363 @@ html {
   color: #00ff00;
   border-bottom-color: rgba(0, 255, 0, 0.3);
 }
+
+/* Add these styles to your existing CSS */
+.payment-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.payment-container {
+  min-width: 300px;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.payment-container form {
+  display: block;
+  width: 100%;
+}
+
+.secure-text {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* Ensure Razorpay button displays properly */
+#razorpay-form script {
+  display: block;
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .payment-section {
+    padding: 1rem;
+  }
+}
+
+/* Updated Payment Section CSS - Add this to your existing BookingDetails.css */
+
+.payment-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+.payment-section h3 {
+  color: #ff0000;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: linear-gradient(45deg, #ff0000, #ffffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.payment-info {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.payment-info p {
+  margin: 0.75rem 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.payment-info p:last-child {
+  border-bottom: none;
+}
+
+.payment-info strong {
+  color: #ff0000;
+  font-weight: 600;
+  min-width: 120px;
+  text-align: left;
+}
+
+.payment-info .amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.payment-container {
+  margin: 1.5rem 0;
+}
+
+.razorpay-payment-button {
+  background: linear-gradient(135deg, #3399cc, #2980b9);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 250px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 20px rgba(51, 153, 204, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.razorpay-payment-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.razorpay-payment-button:hover::before {
+  left: 100%;
+}
+
+.razorpay-payment-button:hover {
+  background: linear-gradient(135deg, #2980b9, #1f5f99);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(51, 153, 204, 0.5);
+}
+
+.razorpay-payment-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(51, 153, 204, 0.4);
+}
+
+.secure-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.secure-text::before {
+  content: "🔒";
+  font-size: 1rem;
+}
+
+/* Payment section animations */
+.payment-section {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state for payment button */
+.razorpay-payment-button.loading {
+  background: linear-gradient(135deg, #666666, #444444);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.razorpay-payment-button.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design for payment section */
+@media (max-width: 768px) {
+  .payment-section {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .payment-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .payment-info {
+    padding: 1rem;
+  }
+
+  .payment-info p {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .payment-info strong {
+    min-width: auto;
+    text-align: center;
+  }
+
+  .razorpay-payment-button {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    min-width: 200px;
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-section {
+    padding: 1rem;
+  }
+
+  .payment-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .payment-info {
+    padding: 0.75rem;
+  }
+
+  .payment-info p {
+    font-size: 0.9rem;
+  }
+
+  .razorpay-payment-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    min-width: 180px;
+  }
+
+  .secure-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Enhanced visual feedback */
+.payment-section:hover {
+  border-color: rgba(255, 0, 0, 0.3);
+  box-shadow: 0 5px 25px rgba(255, 0, 0, 0.1);
+}
+
+.payment-info:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Success state styling (for when payment is completed) */
+.payment-section.success {
+  border-color: rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.payment-section.success h3 {
+  background: linear-gradient(45deg, #00ff00, #ffffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Error state styling */
+.payment-section.error {
+  border-color: rgba(255, 255, 0, 0.3);
+  background: rgba(255, 255, 0, 0.05);
+}
+
+.payment-section.error h3 {
+  background: linear-gradient(45deg, #ffff00, #ffffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Add these styles to BookingDetails.css */
+
+.cancel-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-2px);
+}
+
+.cancel-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Update form-actions to accommodate the new button */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
