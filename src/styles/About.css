@@ -1,4 +1,4 @@
-.about-container {
+.aboutpage-main-container {
   width: 100%;
   max-width: 1400px;
   margin: 2rem auto;
@@ -8,7 +8,7 @@
   padding: 1rem;
 }
 
-.about-section {
+.aboutpage-content-section {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -19,32 +19,32 @@
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.about-section.visible {
+.aboutpage-content-section.aboutpage-section-visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-.section-content {
+.aboutpage-section-content {
   display: flex;
   height: 100%;
   gap: 2rem;
 }
 
-.layout-left {
+.aboutpage-layout-left {
   flex-direction: row-reverse;
 }
 
-.layout-right {
+.aboutpage-layout-right {
   flex-direction: row;
 }
 
 /* Special layout for section 4 */
-.special-layout {
+.aboutpage-special-layout {
   flex-direction: column;
   position: relative;
 }
 
-.text-content {
+.aboutpage-text-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -52,7 +52,7 @@
   padding-left: 10px;
 }
 
-.section-title {
+.aboutpage-section-title {
   background-color: #c1e66f;
   color: #000;
   display: inline-block;
@@ -66,21 +66,21 @@
   z-index: 5;
 }
 
-.section-special .section-title {
+.aboutpage-section-special .aboutpage-section-title {
   margin: auto;
 }
 
-.section-text {
+.aboutpage-section-text {
   font-size: 1rem;
   line-height: 1.6;
   color: #333;
 }
 
-.section-text p {
+.aboutpage-section-text p {
   margin-bottom: 1rem;
 }
 
-.image-container {
+.aboutpage-image-container {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -90,14 +90,14 @@
 }
 
 /* Specific styles for section 4 */
-.slide4-image {
+.aboutpage-slide4-image {
   width: 90%;
   max-height: 400px;
   min-height: 220px;
   margin: 1rem auto;
 }
 
-.section-image {
+.aboutpage-section-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -105,7 +105,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.scrabble-tiles {
+.aboutpage-scrabble-tiles {
   padding: 2rem;
   font-size: 2rem;
   font-weight: bold;
@@ -119,14 +119,14 @@
   width: 100%;
 }
 
-.tile-row {
+.aboutpage-tile-row {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
   margin: 0.5rem 0;
 }
 
-.tile {
+.aboutpage-tile {
   background-color: #e9c46a;
   color: #000;
   width: 2.5rem;
@@ -139,11 +139,11 @@
 }
 
 /* Mobile view/desktop view display settings */
-.mobile-view {
+.aboutpage-mobile-view {
   display: none;
 }
 
-.desktop-view {
+.aboutpage-desktop-view {
   display: flex;
   width: 100%;
   height: 100%;
@@ -151,90 +151,90 @@
 
 /* Media Queries for Responsive Design */
 @media (max-width: 768px) {
-  .mobile-view {
+  .aboutpage-mobile-view {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
 
-  .desktop-view {
+  .aboutpage-desktop-view {
     display: none;
   }
-  
-  .mobile-view .section-title {
+
+  .aboutpage-mobile-view .aboutpage-section-title {
     align-self: center;
     margin-bottom: 1rem;
     text-align: center;
     width: fit-content;
   }
 
-  .mobile-view .image-container {
+  .aboutpage-mobile-view .aboutpage-image-container {
     min-height: 200px;
     margin: 0.5rem 0 1rem;
     order: 2;
   }
 
-  .mobile-view .section-text {
+  .aboutpage-mobile-view .aboutpage-section-text {
     order: 3;
   }
-  
-  .section-title {
+
+  .aboutpage-section-title {
     font-size: 1.2rem;
   }
-  
-  .section-text {
+
+  .aboutpage-section-text {
     font-size: 0.9rem;
   }
-  
-  .about-section {
+
+  .aboutpage-content-section {
     padding: 1.5rem;
   }
 
-  .scrabble-tiles {
+  .aboutpage-scrabble-tiles {
     font-size: 1.5rem;
     padding: 1rem;
   }
 
-  .tile {
+  .aboutpage-tile {
     width: 2rem;
     height: 2rem;
     font-size: 1.5rem;
   }
-  
-  .slide4-image {
+
+  .aboutpage-slide4-image {
     max-height: 220px;
     min-height: 180px;
   }
 }
 
 @media (max-width: 480px) {
-  .about-section {
+  .aboutpage-content-section {
     padding: 1rem;
     min-height: 250px;
   }
-  
-  .mobile-view .image-container {
+
+  .aboutpage-mobile-view .aboutpage-image-container {
     min-height: 150px;
   }
-  
-  .section-title {
+
+  .aboutpage-section-title {
     font-size: 1rem;
     padding: 0.4rem 0.8rem;
     margin-bottom: 1rem;
   }
-  
-  .scrabble-tiles {
+
+  .aboutpage-scrabble-tiles {
     font-size: 1.2rem;
     padding: 0.5rem;
   }
 
-  .tile {
+  .aboutpage-tile {
     width: 1.5rem;
     height: 1.5rem;
     font-size: 1rem;
   }
-  
-  .slide4-image {
+
+  .aboutpage-slide4-image {
     max-height: 180px;
     min-height: 140px;
   }
