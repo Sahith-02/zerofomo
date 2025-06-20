@@ -1,127 +1,552 @@
-.profile-page {
-    min-height: 100vh;
-    display: flex;
+/* Profile Page Styles - Modern Dark Theme with Red Accents */
+/* All class names prefixed with 'up-' (user-profile) to avoid conflicts */
+
+.up-profile-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+}
+
+.up-profile-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.up-profile-card {
+  width: 100%;
+  background: rgba(42, 42, 42, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+/* Profile Header - More Compact */
+.up-profile-header {
+  background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+  color: white;
+  padding: 20px 25px;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 68, 68, 0.2);
+}
+
+.up-profile-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 20% 50%,
+    rgba(255, 68, 68, 0.1) 0%,
+    transparent 50%
+  );
+}
+
+.up-profile-header h2 {
+  margin: 0 0 15px 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  color: #ff4444;
+  text-shadow: 0 2px 4px rgba(255, 68, 68, 0.3);
+}
+
+.up-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.up-profile-avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  border: 2px solid rgba(255, 68, 68, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
+}
+
+.up-profile-details {
+  flex: 1;
+}
+
+.up-profile-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.up-profile-email {
+  font-size: 0.9rem;
+  margin: 0 0 4px 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.up-member-since {
+  font-size: 0.8rem;
+  margin: 0;
+  color: #999;
+}
+
+/* Bookings Section - More Compact */
+.up-bookings-section {
+  padding: 25px;
+  background: #2a2a2a;
+}
+
+.up-bookings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.up-bookings-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.up-booking-stats {
+  display: flex;
+  gap: 15px;
+}
+
+.up-stat {
+  text-align: center;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #3a3a3a 0%, #404040 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 70px;
+  transition: all 0.3s ease;
+}
+
+.up-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.up-stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff4444;
+  margin-bottom: 2px;
+}
+
+.up-stat-label {
+  font-size: 0.75rem;
+  color: #bbb;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.up-booking-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 25px;
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.up-tab-button {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.up-tab-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 68, 68, 0.1) 0%,
+    rgba(255, 68, 68, 0.05) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.up-tab-button:hover::before {
+  opacity: 1;
+}
+
+.up-tab-button:hover {
+  color: #ff4444;
+  transform: translateY(-1px);
+}
+
+.up-tab-button.up-active {
+  background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+  transform: translateY(-2px);
+}
+
+.up-tab-button.up-active::before {
+  opacity: 0;
+}
+
+/* Bookings Content */
+.up-bookings-content {
+  min-height: 300px;
+}
+
+.up-bookings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* Compact Booking Card */
+.up-booking-card {
+  background: linear-gradient(135deg, #3a3a3a 0%, #404040 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.up-booking-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, #ff4444, #ff6666);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.up-booking-card:hover {
+  border-color: rgba(255, 68, 68, 0.5);
+  box-shadow: 0 12px 30px rgba(255, 68, 68, 0.15);
+  transform: translateY(-4px);
+}
+
+.up-booking-card:hover::before {
+  opacity: 1;
+}
+
+.up-booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.up-booking-type h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 6px 0;
+}
+
+.up-booking-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.15);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  white-space: nowrap;
+}
+
+/* Sleeker Status Badges */
+.up-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.up-status-upcoming {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  color: white;
+}
+
+.up-status-ongoing {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  color: white;
+  animation: up-pulse 2s infinite;
+}
+
+.up-status-completed {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: white;
+}
+
+/* Compact Booking Details */
+.up-booking-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.up-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.up-detail-row.up-full-width {
+  grid-column: 1 / -1;
+}
+
+.up-detail-label {
+  font-weight: 500;
+  color: #999;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.up-detail-value {
+  font-weight: 600;
+  color: white;
+  font-size: 0.85rem;
+}
+
+.up-booking-id {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
+
+/* Loading State */
+.up-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #aaa;
+}
+
+.up-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #4a4a4a;
+  border-top: 3px solid #ff4444;
+  border-radius: 50%;
+  animation: up-spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+/* Empty State */
+.up-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aaa;
+}
+
+.up-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.up-empty-state h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.up-empty-state p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .up-profile-container {
+    padding: 10px;
+  }
+
+  .up-profile-header {
+    padding: 16px 20px;
+  }
+
+  .up-profile-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .up-profile-info {
     flex-direction: column;
-  }
-  
-  .profile-container_ {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-    /* background-color: var(--color-light-green); */
-  }
-  
-  .profile-card {
-    width: 100%;
-    max-width: 800px;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-  }
-  
-  .profile-card h2 {
-    color: var(--color-teal);
-    margin-bottom: 25px;
-    font-weight: 600;
-  }
-  
-  .profile-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .profile-avatar {
-    width: 80px;
-    height: 80px;
-    background-color: var(--color-beige);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: 600;
-    color: white;
-    margin-right: 20px;
-  }
-  
-  .profile-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-  }
-  
-  .profile-email {
-    color: #666;
-    font-size: 1rem;
-  }
-  
-  .profile-sections {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-  }
-  
-  .profile-section {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-  }
-  
-  .profile-section h3 {
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.2rem;
-  }
-  
-  .profile-data {
-    display: flex;
-    flex-direction: column;
+    text-align: center;
     gap: 12px;
   }
-  
-  .data-item {
-    display: flex;
-    align-items: center;
+
+  .up-profile-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
   }
-  
-  .data-label {
-    font-weight: 500;
-    min-width: 120px;
-    color: #555;
+
+  .up-bookings-section {
+    padding: 20px;
   }
-  
-  .data-value {
-    color: #333;
+
+  .up-bookings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
-  
-  /* Responsive designs */
-  @media (max-width: 600px) {
-    .profile-card {
-      padding: 20px;
-    }
-    
-    .profile-info {
-      flex-direction: column;
-      text-align: center;
-    }
-    
-    .profile-avatar {
-      margin-right: 0;
-      margin-bottom: 15px;
-    }
-    
-    .data-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
-    }
-    
-    .data-label {
-      min-width: auto;
-    }
+
+  .up-bookings-header h3 {
+    font-size: 1.3rem;
   }
+
+  .up-booking-stats {
+    width: 100%;
+    justify-content: space-around;
+    gap: 12px;
+  }
+
+  .up-stat {
+    padding: 8px 12px;
+    min-width: 60px;
+  }
+
+  .up-stat-number {
+    font-size: 1.3rem;
+  }
+
+  .up-booking-tabs {
+    gap: 4px;
+  }
+
+  .up-tab-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .up-bookings-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .up-booking-card {
+    padding: 14px;
+  }
+
+  .up-booking-details {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .up-detail-row {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .up-profile-header {
+    padding: 12px 16px;
+  }
+
+  .up-bookings-section {
+    padding: 16px;
+  }
+
+  .up-booking-card {
+    padding: 12px;
+  }
+
+  .up-booking-stats {
+    gap: 8px;
+  }
+
+  .up-stat {
+    padding: 6px 10px;
+  }
+
+  .up-tab-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@keyframes up-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes up-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

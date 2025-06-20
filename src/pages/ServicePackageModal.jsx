@@ -13,10 +13,11 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
     navigate("/individual-services");
   };
 
-  // Define content for each package type
+  // Define content for each package type with different base prices
   const packageContent = {
     confident: {
       title: "Confident & Clear Package",
+      basePrice: 9999,
       services: [
         "Finalize Your College/School List",
         "Build a Strong Resume",
@@ -27,6 +28,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
     },
     exploring: {
       title: "Exploring Options Package",
+      basePrice: 11999,
       services: [
         "Clarity Call",
         "Finalize Your College/School List",
@@ -38,6 +40,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
     },
     lost: {
       title: "Feeling Lost Package",
+      basePrice: 13999,
       services: [
         "Brainstorming Call",
         "Clarity Call",
@@ -65,7 +68,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
   };
 
   const handleCompletePackage = () => {
-    const basePrice = 9999;
+    const basePrice = currentPackage.basePrice;
     const additionalPrice = additionalSchools * 4999;
     const totalPrice = basePrice + additionalPrice;
 
@@ -89,7 +92,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
   };
 
   const calculateTotal = () => {
-    return 9999 + additionalSchools * 4999;
+    return currentPackage.basePrice + additionalSchools * 4999;
   };
 
   return (
@@ -160,7 +163,8 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
                 <div className="price-summary-row">
                   <div className="price-breakdown">
                     <span className="base-price">
-                      ₹9,999 <small>first school</small>
+                      ₹{currentPackage.basePrice.toLocaleString()}{" "}
+                      <small>first school</small>
                     </span>
                     {additionalSchools > 0 && (
                       <span className="additional-price">

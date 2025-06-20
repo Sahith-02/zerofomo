@@ -158,6 +158,7 @@ const BookingDetails = () => {
           name: "ZeroFOMO",
           description: `${bookingInfo.serviceType} - ${bookingInfo.displayDate} at ${bookingInfo.displayTime}`,
           image: "/assets/logo.png", // Optional: Add your logo
+          capture: true,
           handler: function (response) {
             // Handle successful payment
             console.log("Payment successful:", response);
@@ -214,6 +215,7 @@ const BookingDetails = () => {
   }, [showPayment, bookingInfo, formData]);
 
   // Function to update booking payment status
+  // In the updateBookingPaymentStatus function in BookingDetails.js
   const updateBookingPaymentStatus = async (paymentId) => {
     try {
       const bookingRef = doc(db, "bookings", bookingInfo.bookingId);
@@ -223,34 +225,31 @@ const BookingDetails = () => {
         paymentCompleted: true,
         paymentId: paymentId,
         paymentDate: new Date(),
-        status: "confirmed", // Change from "pending" to "confirmed"
+        status: "confirmed",
       });
 
-      // Remove temporary reservation since payment is completed
+      // Remove temporary reservation
       if (bookingInfo.tempReservationId) {
         try {
           await deleteDoc(
             doc(db, "tempReservations", bookingInfo.tempReservationId)
           );
-          console.log("Temporary reservation removed after payment");
         } catch (error) {
           console.error("Error removing temporary reservation:", error);
-          // Don't fail the whole process if temp reservation deletion fails
         }
       }
 
-      // Redirect to success page
-      navigate("/booking-success", {
+      // Redirect to payment page with booking details
+      navigate("/payment", {
         state: {
           bookingId: bookingInfo.bookingId,
           paymentId: paymentId,
-          bookingDetails: {
-            date: bookingInfo.displayDate,
-            time: bookingInfo.displayTime,
-            service: bookingInfo.serviceType,
-            duration: bookingInfo.duration,
-            price: bookingInfo.price,
-          },
+          price: bookingInfo.price,
+          serviceType: bookingInfo.serviceType,
+          displayDate: bookingInfo.displayDate,
+          displayTime: bookingInfo.displayTime,
+          duration: bookingInfo.duration,
+          userDetails: formData, // Pass all the form data as userDetails
         },
       });
     } catch (error) {
@@ -260,7 +259,6 @@ const BookingDetails = () => {
       );
     }
   };
-
   useEffect(() => {
     const handleBeforeUnload = () => {
       // This will be handled by the automatic cleanup service

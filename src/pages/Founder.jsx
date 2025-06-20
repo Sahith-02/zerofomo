@@ -24,7 +24,7 @@ const Founder = () => {
               well.
             </p>
 
-            <p>Still, that wasn't enough to get into IT's.</p>
+            <p>Still, that wasn't enough to get into IIT.</p>
 
             <p>
               I started preparing for GATE, but COVID completely threw things
@@ -118,7 +118,7 @@ const Founder = () => {
 
             <p>Thanks for reading my story.</p>
 
-            <p className="closing-line">Let's make your story even better</p>
+            <p className="closing-line">Let's make your story even better!</p>
           </div>
         </div>
       </div>

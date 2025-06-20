@@ -13,7 +13,7 @@ const Footer = () => {
             alt="Zero Fomo Logo"
             className="footer-logo"
           />
-          <p className="footer-logo-text">ZERO FOMO</p>
+          <p className="footer-logo-text">Zero FOMO</p>
         </div>
 
         {/* Menu Section */}

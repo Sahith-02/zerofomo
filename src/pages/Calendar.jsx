@@ -83,7 +83,8 @@ const Calendar = () => {
     const dates = [];
     const today = new Date();
 
-    for (let i = 0; i < 15; i++) {
+    // Start from tomorrow (current date + 1)
+    for (let i = 1; i <= 15; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       dates.push(date);
@@ -97,7 +98,7 @@ const Calendar = () => {
     if (availableDates.length > 0) {
       fetchDayBlockStatus();
     }
-  }, [availableDates, duration]);
+  }, [availableDates]);
 
   // Fetch booked and blocked slots for selected date
   useEffect(() => {
@@ -105,7 +106,7 @@ const Calendar = () => {
       fetchBookedSlots(selectedDate);
       fetchBlockedSlots(selectedDate);
     }
-  }, [selectedDate, duration]);
+  }, [selectedDate]);
 
   // Reset selected slots when date changes
   useEffect(() => {
@@ -135,11 +136,10 @@ const Calendar = () => {
           continue;
         }
 
-        // Check if all slots are booked
+        // Check if all slots are booked (checking ALL durations)
         const bookedQuery = query(
           collection(db, "bookings"),
           where("date", "==", dateStr),
-          where("duration", "==", duration),
           where("status", "==", "confirmed")
         );
         const bookedSnapshot = await getDocs(bookedQuery);
@@ -152,10 +152,28 @@ const Calendar = () => {
         );
         const slotBlockedSnapshot = await getDocs(slotBlockedQuery);
 
+        // Get temp reservations for this date
+        const tempQuery = query(
+          collection(db, "tempReservations"),
+          where("date", "==", dateStr)
+        );
+        const tempSnapshot = await getDocs(tempQuery);
+
+        // Count valid temp reservations
+        let validTempReservations = 0;
+        tempSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const expiresAt = data.expiresAt?.toDate();
+          if (expiresAt && expiresAt > new Date()) {
+            validTempReservations++;
+          }
+        });
+
         const totalSlots = 34;
         const bookedCount = bookedSnapshot.size;
         const blockedCount = slotBlockedSnapshot.size;
-        const unavailableSlots = bookedCount + blockedCount;
+        const unavailableSlots =
+          bookedCount + blockedCount + validTempReservations;
 
         if (unavailableSlots >= totalSlots) {
           dayStatus[dateStr] = {
@@ -177,23 +195,21 @@ const Calendar = () => {
     try {
       setLoading(true);
       await cleanupExpiredBookings();
-      await cleanupExpiredReservations(); // Add this line
+      await cleanupExpiredReservations();
 
       const dateStr = date.toDateString();
 
-      // Fetch confirmed bookings
+      // Fetch confirmed bookings for ALL durations (not just current duration)
       const confirmedQuery = query(
         collection(db, "bookings"),
         where("date", "==", dateStr),
-        where("duration", "==", duration),
         where("status", "==", "confirmed")
       );
 
-      // Fetch temporary reservations
+      // Fetch temporary reservations for ALL durations
       const tempQuery = query(
         collection(db, "tempReservations"),
-        where("date", "==", dateStr),
-        where("duration", "==", duration)
+        where("date", "==", dateStr)
       );
 
       const [confirmedSnapshot, tempSnapshot] = await Promise.all([
@@ -204,13 +220,17 @@ const Calendar = () => {
       const booked = {};
       const tempReserved = {};
 
-      // Process confirmed bookings
+      // Process confirmed bookings - mark ALL time slots as booked regardless of duration
       confirmedSnapshot.forEach((doc) => {
         const data = doc.data();
-        booked[data.time] = true;
+        booked[data.time] = {
+          duration: data.duration,
+          serviceType: data.serviceType,
+          isCurrentDuration: data.duration === duration,
+        };
       });
 
-      // Process temporary reservations
+      // Process temporary reservations - mark ALL time slots as temp reserved
       tempSnapshot.forEach((doc) => {
         const data = doc.data();
         const expiresAt = data.expiresAt?.toDate();
@@ -221,6 +241,8 @@ const Calendar = () => {
             userId: data.userId,
             expiresAt: expiresAt,
             isOwn: data.userId === currentUser?.uid,
+            duration: data.duration,
+            isCurrentDuration: data.duration === duration,
           };
         }
       });
@@ -306,27 +328,36 @@ const Calendar = () => {
         const tempReservation = tempReservedSlots[time];
         const isSelected = selectedSlots.includes(time);
 
-        // Determine if slot is disabled
-        let disabled = isBooked || isBlocked;
-        let slotStatus = "available";
-        let statusText = "";
+        // Determine slot status and availability
+        let disabled = false;
+        let slotClass = "";
+        let labelText = "";
 
         if (isBooked) {
-          slotStatus = "booked";
-          statusText = "Booked";
+          slotClass = "cal-disabled";
+          // Show more detailed info if it's a different duration
+          if (isBooked.isCurrentDuration) {
+            labelText = "Booked";
+          } else {
+            labelText = `Booked (${isBooked.duration}min)`;
+          }
           disabled = true;
         } else if (isBlocked) {
-          slotStatus = "blocked";
-          statusText = isBlocked.reason || "Blocked";
+          slotClass = "cal-blocked";
+          labelText = isBlocked.type === "day" ? "Blocked" : "Blocked";
           disabled = true;
         } else if (tempReservation && !tempReservation.isOwn) {
-          slotStatus = "temp-reserved";
-          statusText = "Reserved";
+          slotClass = "cal-temp-reserved";
+          if (tempReservation.isCurrentDuration) {
+            labelText = "Temporarily Blocked";
+          } else {
+            labelText = `Temporarily Blocked (${tempReservation.duration}min)`;
+          }
           disabled = true;
         } else if (tempReservation && tempReservation.isOwn) {
-          slotStatus = "own-reservation";
-          statusText = "Your Reservation";
-          disabled = false; // Allow user to select their own reserved slot
+          slotClass = "cal-own-reservation";
+          labelText = "Your Reservation";
+          disabled = false;
         }
 
         slots.push({
@@ -337,8 +368,8 @@ const Calendar = () => {
           booked: isBooked,
           tempReserved: tempReservation,
           selected: isSelected,
-          slotStatus: slotStatus,
-          statusText: statusText,
+          slotClass: slotClass,
+          labelText: labelText,
         });
       }
     }
@@ -422,7 +453,11 @@ const Calendar = () => {
       });
     } else if (adminMode) {
       setSelectedTime(time);
-    } else if (!blockedSlots[time] && !bookedSlots[time]) {
+    } else if (
+      !blockedSlots[time] &&
+      !bookedSlots[time] &&
+      (!tempReservedSlots[time] || tempReservedSlots[time].isOwn)
+    ) {
       setSelectedTime(time);
     }
   };
@@ -751,9 +786,7 @@ const Calendar = () => {
                       <div className="cal-today-label">Today</div>
                     )}
                     {isDateBlocked && (
-                      <div className="cal-blocked-label">
-                        {blockReason.includes("admin") ? "Blocked" : "Full"}
-                      </div>
+                      <div className="cal-blocked-label">Blocked</div>
                     )}
                   </button>
                 );
@@ -830,7 +863,6 @@ const Calendar = () => {
                   </div>
                 </div>
               )}
-
               <div className="cal-times-grid">
                 {timeSlots.map((slot, index) => (
                   <button
@@ -839,31 +871,48 @@ const Calendar = () => {
                       selectedTime === slot.value || slot.selected
                         ? "cal-selected"
                         : ""
-                    } ${slot.disabled ? "cal-disabled" : ""} ${
-                      slot.blocked ? "cal-blocked" : ""
-                    }`}
+                    } ${slot.slotClass}`}
                     onClick={() => handleTimeSelect(slot.value)}
                     disabled={!adminMode && slot.disabled}
+                    title={
+                      slot.tempReserved && !slot.tempReserved.isOwn
+                        ? `Reserved until ${slot.tempReserved.expiresAt?.toLocaleTimeString()}`
+                        : slot.labelText
+                    }
                   >
-                    {slot.display}
+                    <div className="cal-time-display">{slot.display}</div>
+
+                    {/* Simple labels like first image */}
                     {slot.booked && (
-                      <span className="cal-booked-label">Booked</span>
+                      <div className="cal-booked-label">{slot.labelText}</div>
                     )}
+
                     {slot.blocked && (
-                      <span className="cal-blocked-label">
-                        {slot.blocked.reason}
-                        {adminMode && (
-                          <button
-                            className="cal-unblock-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUnblockSlot(slot.value);
-                            }}
-                          >
-                            ×
-                          </button>
-                        )}
-                      </span>
+                      <div className="cal-blocked-slot-label">Blocked</div>
+                    )}
+
+                    {slot.tempReserved && !slot.tempReserved.isOwn && (
+                      <div className="cal-temp-reserved-label">
+                        {slot.labelText}
+                      </div>
+                    )}
+
+                    {slot.tempReserved && slot.tempReserved.isOwn && (
+                      <div className="cal-own-reservation-label">Yours</div>
+                    )}
+
+                    {/* Admin unblock button for blocked slots */}
+                    {adminMode && slot.blocked && (
+                      <button
+                        className="cal-unblock-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnblockSlot(slot.value);
+                        }}
+                        title="Unblock this slot"
+                      >
+                        ×
+                      </button>
                     )}
                   </button>
                 ))}
