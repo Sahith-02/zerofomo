@@ -170,10 +170,10 @@ const ContactUs = () => {
                 <div className="contact-method-content">
                   <h3 className="contact-method-title">Email</h3>
                   <a
-                    href="mailto:contact@zerofomo.com"
+                    href="mailto:harichandana.chinni@zerofomo.org"
                     className="contact-method-link"
                   >
-                    contact@zerofomo.com
+                   harichandana.chinni@zerofomo.org
                   </a>
                   <p className="contact-method-desc">
                     Send us an email anytime
