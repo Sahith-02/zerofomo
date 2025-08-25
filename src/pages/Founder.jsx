@@ -12,7 +12,7 @@ const Founder = () => {
         <div className="founder-content">
           <div className="founder-image">
             <img
-              src="/assets/Founder.jpg"
+              src="/assets/founder_new.jpg"
               alt="Hari Chandana - Founder of ZeroFOMO"
             />
           </div>
