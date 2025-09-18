@@ -69,7 +69,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
 
   const handleCompletePackage = () => {
     const basePrice = currentPackage.basePrice;
-    const additionalPrice = additionalSchools * 4999;
+    const additionalPrice = additionalSchools * 5999;
     const totalPrice = basePrice + additionalPrice;
 
     onClose();
@@ -92,7 +92,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
   };
 
   const calculateTotal = () => {
-    return currentPackage.basePrice + additionalSchools * 4999;
+    return currentPackage.basePrice + additionalSchools * 5999;
   };
 
   return (
@@ -168,7 +168,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
                     </span>
                     {additionalSchools > 0 && (
                       <span className="additional-price">
-                        + ₹{(additionalSchools * 4999).toLocaleString()}{" "}
+                        + ₹{(additionalSchools * 5999).toLocaleString()}{" "}
                         <small>({additionalSchools} more)</small>
                       </span>
                     )}
