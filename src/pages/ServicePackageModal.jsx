@@ -17,7 +17,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
   const packageContent = {
     confident: {
       title: "Confident & Clear Package",
-      basePrice: 9999,
+      basePrice: 13999,
       services: [
         "Finalize Your College/School List",
         "Build a Strong Resume",
@@ -28,7 +28,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
     },
     exploring: {
       title: "Exploring Options Package",
-      basePrice: 11999,
+      basePrice: 15999,
       services: [
         "Clarity Call",
         "Finalize Your College/School List",
@@ -40,7 +40,7 @@ const ServicePackageModal = ({ isOpen, onClose, packageType }) => {
     },
     lost: {
       title: "Feeling Lost Package",
-      basePrice: 13999,
+      basePrice: 17999,
       services: [
         "Brainstorming Call",
         "Clarity Call",
